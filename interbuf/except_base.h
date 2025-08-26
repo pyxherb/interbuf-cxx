@@ -6,11 +6,18 @@
 #include <peff/base/alloc.h>
 
 namespace interbuf {
+	enum class ExceptionKind {
+		OutOfMemory = 0,
+		PrematuredEndOfBuffer,
+
+		InvalidDataType,
+	};
+
 	class Exception {
 	public:
-		peff::UUID kind;
+		ExceptionKind kind;
 
-		INTERBUF_API Exception(const peff::UUID &kind);
+		INTERBUF_API Exception(ExceptionKind kind);
 		INTERBUF_API virtual ~Exception();
 
 		virtual void dealloc() = 0;
