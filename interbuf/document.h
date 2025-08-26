@@ -11,14 +11,26 @@
 namespace interbuf {
 	class Document;
 
-	class ObjectIndex {
+	class ObjectMetadata {
 	public:
 		Document *document;
 		size_t offset;
 		peff::HashMap<std::string_view, size_t> idxMemberOffsets;
 
-		INTERBUF_API ObjectIndex(Document *document, size_t offset);
-		INTERBUF_API ~ObjectIndex();
+		INTERBUF_API ObjectMetadata(Document *document, size_t offset);
+		INTERBUF_API ~ObjectMetadata();
+
+		INTERBUF_API void dealloc() noexcept;
+	};
+
+	class ArrayMetadata {
+	public:
+		Document *document;
+		size_t offset;
+		peff::DynArray<size_t> idxElementOffsets;
+
+		INTERBUF_API ArrayMetadata(Document *document, size_t offset);
+		INTERBUF_API ~ArrayMetadata();
 
 		INTERBUF_API void dealloc() noexcept;
 	};
@@ -28,7 +40,8 @@ namespace interbuf {
 		peff::RcObjectPtr<peff::Alloc> allocator;
 		peff::Map<size_t, DataType> offsetTable;
 		peff::DynArray<uint8_t> rawData;
-		peff::DynArray<std::unique_ptr<ObjectIndex, peff::DeallocableDeleter<ObjectIndex>>> objectIndices;
+		peff::Set<std::unique_ptr<ObjectMetadata, peff::DeallocableDeleter<ObjectMetadata>>> objectMetadata;
+		peff::Set<std::unique_ptr<ArrayMetadata, peff::DeallocableDeleter<ArrayMetadata>>> arrayMetadata;
 
 		INTERBUF_API Document(peff::Alloc *selfAllocator);
 		INTERBUF_API ~Document();
@@ -36,9 +49,43 @@ namespace interbuf {
 		INTERBUF_API void dealloc() noexcept;
 	};
 
-	INTERBUF_API ExceptionPointer parseRawIeonField(Document *document, size_t &offset, std::string_view &nameOut, DataType &dataTypeOut);
+	enum class DocumentParseFrameKind {
+		Normal = 0,
+		ObjectMember,
+		ObjectMemberEnd,
+		ArrayElement,
+		ArrayElementEnd,
+	};
 
-	INTERBUF_API ExceptionPointer parseRawIeonDocument(Document *document);
+	struct DocumentParseFrame {
+		union {
+			struct {
+				ObjectMetadata *objectMetadata;
+				size_t nMembers;
+				size_t curIndex;
+			} asObjectMember;
+			struct {
+				ArrayMetadata *arrayMetadata;
+				size_t nElements;
+				size_t curIndex;
+			} asArrayElement;
+		};
+
+		DocumentParseFrameKind kind;
+	};
+
+	struct DocumentParseContext {
+		Document *document;
+		size_t offset = 0;
+		peff::List<DocumentParseFrame> frames;
+
+		INTERBUF_FORCEINLINE DocumentParseContext(peff::Alloc *allocator, Document *document) : document(document), frames(allocator) {}
+	};
+
+	INTERBUF_API ExceptionPointer parseRawIeonDataType(DocumentParseContext &context, DataType &dataTypeOut);
+	INTERBUF_API ExceptionPointer parseRawIeonField(DocumentParseContext &context, std::string_view &nameOut, DataType &dataTypeOut);
+
+	INTERBUF_API ExceptionPointer parseRawIeonDocument(peff::Alloc *allocator, Document *document);
 }
 
 #endif
