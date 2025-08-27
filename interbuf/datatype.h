@@ -5,48 +5,58 @@
 #include <cstdint>
 
 namespace interbuf {
-	enum class DataTypeKind : uint8_t {
+	enum class RawDataTypeKind : uint8_t {
 		I8 = 0,
 		I16,
+		I24,
 		I32,
+		I40,
+		I48,
+		I56,
 		I64,
 
 		U8,
 		U16,
+		U24,
 		U32,
+		U40,
+		U48,
+		U56,
 		U64,
 
 		F32,
 		F64,
-		Binary,
+
+		String,
+
 		BoolTrue,
 		BoolFalse,
-		Object,
+
+		Struct,
 		Array
 	};
 
-	struct DataType {
-		union {
-			struct {
-				struct {
-					uint64_t len;
-					uint8_t offset;
-				} asBinary;
-				struct {
-					uint64_t nMembers;
-					uint8_t offset;
-				} asObject;
-				struct {
-					uint64_t len;
-					uint8_t offset;
-				} asArray;
-			};
-		} exData;
-		DataTypeKind kind;
+	enum class FieldTypeKind : uint8_t {
+		I8 = 0,
+		I16,
+		I32,
+		I64,
+		U8,
+		U16,
+		U32,
+		U64,
+		F32,
+		F64,
+		String,
+		Bool,
+		Struct,
+		Array
+	};
 
-		DataType() = default;
-		INTERBUF_FORCEINLINE DataType(DataTypeKind kind) : kind(kind) {}
-		~DataType() = default;
+	enum class ObjectType : uint8_t {
+		DataType = 0,
+		StructLayout,
+		StructInstance,
 	};
 }
 

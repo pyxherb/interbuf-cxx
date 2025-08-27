@@ -7,85 +7,98 @@
 #include <peff/containers/set.h>
 #include <peff/containers/map.h>
 #include <peff/containers/hashmap.h>
+#include <peff/advutils/shared_ptr.h>
+#include <variant>
 
 namespace interbuf {
 	class Document;
 
-	class ObjectMetadata {
+	class Object;
+
+	typedef void (*ObjectDestructor)(Object *astNode);
+
+	template <typename T>
+	using ObjectPtr = peff::SharedPtr<T>;
+
+	class Object {
+	private:
+		Document *_document;
+		Object *_nextDestructible;
+		ObjectDestructor _destructor;
+
+		friend INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
+		friend class Document;
+
 	public:
-		Document *document;
-		size_t offset;
-		peff::HashMap<std::string_view, size_t> idxMemberOffsets;
+		peff::RcObjectPtr<peff::Alloc> selfAllocator;
 
-		INTERBUF_API ObjectMetadata(Document *document, size_t offset);
-		INTERBUF_API ~ObjectMetadata();
+		INTERBUF_API Object(Document *document, peff::Alloc *allocator, ObjectType type);
 
-		INTERBUF_API void dealloc() noexcept;
+		virtual void dealloc() noexcept = 0;
+
+	private:
+		ObjectType _type;
+
+	public:
+		INTERBUF_FORCEINLINE ObjectType getObjectType() const {
+			return _type;
+		}
 	};
 
-	class ArrayMetadata {
+	INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
+
+	template <typename T>
+	struct ObjectControlBlock : public peff::SharedPtr<T>::DefaultSharedPtrControlBlock {
+		INTERBUF_FORCEINLINE ObjectControlBlock(peff::Alloc *allocator, T *ptr) noexcept : peff::SharedPtr<T>::DefaultSharedPtrControlBlock(allocator, ptr) {}
+		inline virtual ~ObjectControlBlock() {}
+
+		inline virtual void onStrongRefZero() noexcept override {
+			addObjectToDestructibleList(this->ptr, [](AstNode *astNode) {
+				peff::destroyAndRelease<T>(astNode->selfAllocator.get(), static_cast<T *>(astNode), alignof(T));
+			});
+		}
+
+		inline virtual void onRefZero() noexcept override {
+			peff::destroyAndRelease<ObjectControlBlock<T>>(this->allocator.get(), this, alignof(ObjectControlBlock<T>));
+		}
+	};
+
+	template <typename T, typename... Args>
+	INTERBUF_FORCEINLINE ObjectPtr<T> makeObject(peff::Alloc *allocator, Args &&...args) {
+		return peff::makeSharedWithControlBlock<T, ObjectControlBlock<T>>(allocator, std::forward<Args>(args)...);
+	}
+
+	class StructLayoutObject;
+
+	class FieldTypeObject : public Object {
+	private:
+		FieldTypeKind _fieldTypeKind;
+		std::variant<std::monostate, ObjectPtr<StructLayoutObject>, ObjectPtr<FieldTypeObject>> _exData;
+
 	public:
-		Document *document;
-		size_t offset;
-		peff::DynArray<size_t> idxElementOffsets;
+	};
 
-		INTERBUF_API ArrayMetadata(Document *document, size_t offset);
-		INTERBUF_API ~ArrayMetadata();
-
-		INTERBUF_API void dealloc() noexcept;
+	class StructLayoutObject : public Object {
+	public:
 	};
 
 	class Document {
+	private:
+		INTERBUF_API void _doClearDeferredDestructibleObjects();
+
 	public:
 		peff::RcObjectPtr<peff::Alloc> allocator;
-		peff::Map<size_t, DataType> offsetTable;
-		peff::DynArray<uint8_t> rawData;
-		peff::Set<std::unique_ptr<ObjectMetadata, peff::DeallocableDeleter<ObjectMetadata>>> objectMetadata;
-		peff::Set<std::unique_ptr<ArrayMetadata, peff::DeallocableDeleter<ArrayMetadata>>> arrayMetadata;
+		Object *destructibleObjectList = nullptr;
 
-		INTERBUF_API Document(peff::Alloc *selfAllocator);
-		INTERBUF_API ~Document();
+		INTERBUF_API Document(peff::Alloc *allocator);
+		INTERBUF_API virtual ~Document();
 
-		INTERBUF_API void dealloc() noexcept;
+		INTERBUF_FORCEINLINE void clearDeferredDestructibleObjects() {
+			if (destructibleObjectList) {
+				_doClearDeferredDestructibleObjects();
+			}
+		}
 	};
-
-	enum class DocumentParseFrameKind {
-		Normal = 0,
-		ObjectMember,
-		ObjectMemberEnd,
-		ArrayElement,
-		ArrayElementEnd,
-	};
-
-	struct DocumentParseFrame {
-		union {
-			struct {
-				ObjectMetadata *objectMetadata;
-				size_t nMembers;
-				size_t curIndex;
-			} asObjectMember;
-			struct {
-				ArrayMetadata *arrayMetadata;
-				size_t nElements;
-				size_t curIndex;
-			} asArrayElement;
-		};
-
-		DocumentParseFrameKind kind;
-	};
-
-	struct DocumentParseContext {
-		Document *document;
-		size_t offset = 0;
-		peff::List<DocumentParseFrame> frames;
-
-		INTERBUF_FORCEINLINE DocumentParseContext(peff::Alloc *allocator, Document *document) : document(document), frames(allocator) {}
-	};
-
-	INTERBUF_API ExceptionPointer parseRawIeonDataType(DocumentParseContext &context, DataType &dataTypeOut);
-	INTERBUF_API ExceptionPointer parseRawIeonField(DocumentParseContext &context, std::string_view &nameOut, DataType &dataTypeOut);
-
-	INTERBUF_API ExceptionPointer parseRawIeonDocument(peff::Alloc *allocator, Document *document);
 }
 
 #endif
