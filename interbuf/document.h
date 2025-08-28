@@ -55,8 +55,8 @@ namespace interbuf {
 		inline virtual ~ObjectControlBlock() {}
 
 		inline virtual void onStrongRefZero() noexcept override {
-			addObjectToDestructibleList(this->ptr, [](AstNode *astNode) {
-				peff::destroyAndRelease<T>(astNode->selfAllocator.get(), static_cast<T *>(astNode), alignof(T));
+			addObjectToDestructibleList(this->ptr, [](Object *object) {
+				peff::destroyAndRelease<T>(object->selfAllocator.get(), static_cast<T *>(object), alignof(T));
 			});
 		}
 
@@ -85,28 +85,95 @@ namespace interbuf {
 		}
 	};
 
+	template<FieldTypeKind ftk>
+	class SimpleDataTypeObject final : public DataTypeObject {
+	public:
+		INTERBUF_FORCEINLINE SimpleDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, ftk) {}
+		inline virtual ~SimpleDataTypeObject() {}
+
+		inline virtual void dealloc() noexcept override {
+			peff::destroyAndRelease<SimpleDataTypeObject<ftk>>(selfAllocator.get(), this, alignof(SimpleDataTypeObject<ftk>));
+		}
+	};
+
+	using I8DataTypeObject = SimpleDataTypeObject<FieldTypeKind::I8>;
+	using I16DataTypeObject = SimpleDataTypeObject<FieldTypeKind::I16>;
+	using I32DataTypeObject = SimpleDataTypeObject<FieldTypeKind::I32>;
+	using I64DataTypeObject = SimpleDataTypeObject<FieldTypeKind::I64>;
+	using U8DataTypeObject = SimpleDataTypeObject<FieldTypeKind::U8>;
+	using U16DataTypeObject = SimpleDataTypeObject<FieldTypeKind::U16>;
+	using U32DataTypeObject = SimpleDataTypeObject<FieldTypeKind::U32>;
+	using U64DataTypeObject = SimpleDataTypeObject<FieldTypeKind::U64>;
+	using F32DataTypeObject = SimpleDataTypeObject<FieldTypeKind::F32>;
+	using F64DataTypeObject = SimpleDataTypeObject<FieldTypeKind::F64>;
+	using StringDataTypeObject = SimpleDataTypeObject<FieldTypeKind::String>;
+	using BoolDataTypeObject = SimpleDataTypeObject<FieldTypeKind::Bool>;
+
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::I8);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::I16);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::I32);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::I64);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::U8);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::U16);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::U32);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::U64);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::F32);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::F64);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::String);
+	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::Bool);
+
 	struct StructField {
 		peff::String name;
 		ObjectPtr<DataTypeObject> type;
 		size_t offset;
+
+		INTERBUF_FORCEINLINE StructField() : name(nullptr), type({}), offset(0) {}
+		INTERBUF_FORCEINLINE StructField(StructField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(0) {}
+		INTERBUF_FORCEINLINE StructField(peff::String &&name, ObjectPtr<DataTypeObject> type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
+		~StructField() = default;
+
+		INTERBUF_FORCEINLINE StructField& operator=(StructField&& rhs) noexcept {
+			name = std::move(rhs.name);
+			type = std::move(rhs.type);
+			offset = rhs.offset;
+
+			return *this;
+		}
 	};
 
-	class StructLayoutObject : public Object {
-	public:
-		peff::DynArray<StructField> structFields;
-		peff::HashMap<std::string_view, size_t> fieldNameIndices;
+	class StructLayoutObject final : public Object {
+	private:
+		peff::DynArray<StructField> _structFields;
+		peff::HashMap<std::string_view, size_t> _fieldNameIndices;
+		bool _isFieldNameIndicesValid = false;
 
+	public:
 		INTERBUF_API StructLayoutObject(Document *document, peff::Alloc *allocator);
 		INTERBUF_API virtual ~StructLayoutObject();
 
-		[[nodiscard]] INTERBUF_API bool updateFieldNameIndices();
+		INTERBUF_API virtual void dealloc() noexcept override;
+
+		INTERBUF_FORCEINLINE bool isFieldNameIndicesBuilt() const noexcept {
+			return _isFieldNameIndicesValid;
+		}
+
+		INTERBUF_FORCEINLINE void invalidateFieldNameIndices() noexcept {
+			_fieldNameIndices.clear();
+			_isFieldNameIndicesValid = false;
+		}
+		[[nodiscard]] INTERBUF_API bool updateFieldNameIndices() noexcept;
+
+		[[nodiscard]] INTERBUF_API bool addField(StructField &&field);
+		[[nodiscard]] INTERBUF_API bool insertField(size_t index, StructField &&field);
 
 		INTERBUF_FORCEINLINE StructField& getNamedField(const std::string_view &name) {
-			return structFields.at(fieldNameIndices.at(name));
+			assert(_isFieldNameIndicesValid);
+			return _structFields.at(_fieldNameIndices.at(name));
 		}
 
 		INTERBUF_FORCEINLINE const StructField &getNamedField(const std::string_view &name) const {
-			return structFields.at(fieldNameIndices.at(name));
+			assert(_isFieldNameIndicesValid);
+			return _structFields.at(_fieldNameIndices.at(name));
 		}
 	};
 

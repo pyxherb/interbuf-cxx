@@ -2,7 +2,7 @@
 
 using namespace interbuf;
 
-INTERBUF_API Exception::Exception(const peff::UUID &kind) : kind(kind) {
+INTERBUF_API Exception::Exception(ExceptionKind kind) : kind(kind) {
 }
 
 INTERBUF_API Exception::~Exception() {
