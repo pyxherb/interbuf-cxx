@@ -2,11 +2,12 @@
 #define _INTERBUF_DOCUMENT_H_
 
 #include "datatype.h"
-#include "encode.h"
+#include "varint_encode.h"
 #include <peff/base/deallocable.h>
 #include <peff/containers/set.h>
 #include <peff/containers/map.h>
 #include <peff/containers/hashmap.h>
+#include <peff/containers/string.h>
 #include <peff/advutils/shared_ptr.h>
 #include <variant>
 
@@ -33,6 +34,7 @@ namespace interbuf {
 		peff::RcObjectPtr<peff::Alloc> selfAllocator;
 
 		INTERBUF_API Object(Document *document, peff::Alloc *allocator, ObjectType type);
+		INTERBUF_API virtual ~Object();
 
 		virtual void dealloc() noexcept = 0;
 
@@ -70,16 +72,42 @@ namespace interbuf {
 
 	class StructLayoutObject;
 
-	class FieldTypeObject : public Object {
+	class DataTypeObject : public Object {
 	private:
 		FieldTypeKind _fieldTypeKind;
-		std::variant<std::monostate, ObjectPtr<StructLayoutObject>, ObjectPtr<FieldTypeObject>> _exData;
 
 	public:
+		INTERBUF_API DataTypeObject(Document *document, peff::Alloc *allocator, FieldTypeKind fieldTypeKind);
+		INTERBUF_API virtual ~DataTypeObject();
+
+		INTERBUF_FORCEINLINE FieldTypeKind getFieldTypeKind() {
+			return _fieldTypeKind;
+		}
+	};
+
+	struct StructField {
+		peff::String name;
+		ObjectPtr<DataTypeObject> type;
+		size_t offset;
 	};
 
 	class StructLayoutObject : public Object {
 	public:
+		peff::DynArray<StructField> structFields;
+		peff::HashMap<std::string_view, size_t> fieldNameIndices;
+
+		INTERBUF_API StructLayoutObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API virtual ~StructLayoutObject();
+
+		[[nodiscard]] INTERBUF_API bool updateFieldNameIndices();
+
+		INTERBUF_FORCEINLINE StructField& getNamedField(const std::string_view &name) {
+			return structFields.at(fieldNameIndices.at(name));
+		}
+
+		INTERBUF_FORCEINLINE const StructField &getNamedField(const std::string_view &name) const {
+			return structFields.at(fieldNameIndices.at(name));
+		}
 	};
 
 	class Document {

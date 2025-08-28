@@ -1,4 +1,4 @@
-#include "encode.h"
+#include "varint_encode.h"
 
 using namespace interbuf;
 

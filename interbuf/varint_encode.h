@@ -1,5 +1,5 @@
-#ifndef _INTERBUF_ENCODE_H_
-#define _INTERBUF_ENCODE_H_
+#ifndef _INTERBUF_VARINT_ENCODE_H_
+#define _INTERBUF_VARINT_ENCODE_H_
 
 #include "except.h"
 #include <peff/containers/bitarray.h>
