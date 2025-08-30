@@ -166,6 +166,10 @@ namespace interbuf {
 		[[nodiscard]] INTERBUF_API bool addField(StructField &&field);
 		[[nodiscard]] INTERBUF_API bool insertField(size_t index, StructField &&field);
 
+		INTERBUF_FORCEINLINE const decltype(_structFields) &getFields() const {
+			return _structFields;
+		}
+
 		INTERBUF_FORCEINLINE StructField& getNamedField(const std::string_view &name) {
 			assert(_isFieldNameIndicesValid);
 			return _structFields.at(_fieldNameIndices.at(name));
