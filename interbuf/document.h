@@ -128,7 +128,7 @@ namespace interbuf {
 		size_t offset;
 
 		INTERBUF_FORCEINLINE StructField() : name(nullptr), type({}), offset(0) {}
-		INTERBUF_FORCEINLINE StructField(StructField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(0) {}
+		INTERBUF_FORCEINLINE StructField(StructField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
 		INTERBUF_FORCEINLINE StructField(peff::String &&name, ObjectPtr<DataTypeObject> type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
 		~StructField() = default;
 
