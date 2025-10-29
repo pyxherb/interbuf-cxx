@@ -191,6 +191,19 @@ namespace interbuf {
 		INTERBUF_API void dealloc() noexcept override;
 	};
 
+	typedef void (*ArraySerializer)(const void *ptr, const char *& ptrOut, size_t &szElementOut, size_t &lengthOut);
+
+	class ArrayDataTypeObject final : public DataTypeObject {
+	public:
+		ObjectPtr<DataTypeObject> elementType;
+		ArraySerializer serializer = nullptr;
+
+		INTERBUF_API ArrayDataTypeObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API ~ArrayDataTypeObject();
+
+		INTERBUF_API void dealloc() noexcept override;
+	};
+
 	class Document {
 	private:
 		INTERBUF_API void _doClearDeferredDestructibleObjects();

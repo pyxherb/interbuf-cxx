@@ -11,49 +11,17 @@ namespace interbuf {
 
 		[[nodiscard]] virtual bool read(char *buffer, size_t size) noexcept = 0;
 
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readI8(int8_t &data) noexcept {
-			return read((char *)&data, sizeof(int8_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readI16(int16_t &data) noexcept {
-			return read((char *)&data, sizeof(int16_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readI32(int32_t &data) noexcept {
-			return read((char *)&data, sizeof(int32_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readI64(int64_t &data) noexcept {
-			return read((char *)&data, sizeof(int64_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readU8(uint8_t &data) noexcept {
-			return read((char *)&data, sizeof(uint8_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readU16(uint16_t &data) noexcept {
-			return read((char *)&data, sizeof(uint16_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readU32(uint32_t &data) noexcept {
-			return read((char *)&data, sizeof(uint32_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readU64(uint64_t &data) noexcept {
-			return read((char *)&data, sizeof(uint64_t));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readBool(bool &data) noexcept {
-			return read((char *)&data, sizeof(bool));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readF32(float &data) noexcept {
-			return read((char *)&data, sizeof(float));
-		}
-
-		[[nodiscard]] INTERBUF_FORCEINLINE bool readF64(double &data) noexcept {
-			return read((char *)&data, sizeof(double));
-		}
+		[[nodiscard]] virtual bool readI8(int8_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readI16(int16_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readI32(int32_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readI64(int64_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readU8(uint8_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readU16(uint16_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readU32(uint32_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readU64(uint64_t &data) noexcept = 0;
+		[[nodiscard]] virtual bool readBool(bool &data) noexcept = 0;
+		[[nodiscard]] virtual bool readF32(float &data) noexcept = 0;
+		[[nodiscard]] virtual bool readF64(double &data) noexcept = 0;
 
 		virtual void dealloc() noexcept = 0;
 	};
@@ -84,13 +52,22 @@ namespace interbuf {
 		INTERBUF_API ~StructMemberSerializeFrameExData();
 	};
 
+	struct ArrayMemberSerializeFrameExData {
+		ObjectPtr<ArrayDataTypeObject> dataType;
+		size_t length = 0;
+		size_t idxMember = 0;
+
+		INTERBUF_FORCEINLINE ArrayMemberSerializeFrameExData(ObjectPtr<ArrayDataTypeObject> dataType) : dataType(dataType) {}
+		INTERBUF_API ~ArrayMemberSerializeFrameExData();
+	};
+
 	enum class SerializeFrameType {
 		StructMember = 0,
 		ArrayElement,
 	};
 
 	struct SerializeFrame {
-		std::variant<std::monostate, StructMemberSerializeFrameExData> exData;
+		std::variant<std::monostate, StructMemberSerializeFrameExData, ArrayMemberSerializeFrameExData> exData;
 		SerializeFrameType frameType;
 		const char *ptr;
 		size_t size;
@@ -104,8 +81,6 @@ namespace interbuf {
 
 		INTERBUF_FORCEINLINE SerializeContext(
 			peff::Alloc *allocator,
-			const char *ptr,
-			size_t size,
 			Writer *writer)
 			: frames(allocator),
 			  writer(writer) {}

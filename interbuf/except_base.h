@@ -65,7 +65,7 @@ namespace interbuf {
 
 		INTERBUF_FORCEINLINE void unwrap() noexcept {
 			if (_ptr) {
-				assert(("Unhandled NetKnot exception: ", false));
+				assert(("Unhandled Interbuf exception: ", false));
 			}
 		}
 

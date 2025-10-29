@@ -11,26 +11,30 @@ INTERBUF_API Writer::~Writer() {
 INTERBUF_API StructMemberSerializeFrameExData::~StructMemberSerializeFrameExData() {
 }
 
+INTERBUF_API ArrayMemberSerializeFrameExData::~ArrayMemberSerializeFrameExData() {
+}
+
 INTERBUF_API SerializeContext::~SerializeContext() {
 }
 
 INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *context) {
-	while (context->frames.size() > 1) {
+	while (context->frames.size()) {
 		SerializeFrame &frame = context->frames.back();
 
 		switch (frame.frameType) {
 			case SerializeFrameType::StructMember: {
 				StructMemberSerializeFrameExData &exData = std::get<StructMemberSerializeFrameExData>(frame.exData);
 
-				if (exData.idxMember > exData.layout->getFields().size()) {
+				if (exData.idxMember >= exData.layout->getFields().size()) {
 					context->frames.popBack();
 					break;
 				}
 
 				auto &i = exData.layout->getFields().at(exData.idxMember);
 
+				const char *curPtr = frame.ptr + i.offset;
+
 				switch (i.type->getFieldTypeKind()) {
-					const char *curPtr = frame.ptr + i.offset;
 					case FieldTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
@@ -125,6 +129,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *con
 						}
 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
+						break;
 					}
 					case FieldTypeKind::F64: {
 						double data;
@@ -138,6 +143,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *con
 						}
 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
+						break;
 					}
 					case FieldTypeKind::Bool: {
 						bool data = *(bool *)curPtr;
@@ -159,6 +165,31 @@ INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *con
 
 						break;
 					}
+					case FieldTypeKind::Array: {
+						const char *data = curPtr;
+
+						SerializeFrame newFrame;
+
+						auto type = i.type.castTo<ArrayDataTypeObject>();
+
+						ArrayMemberSerializeFrameExData exData(type);
+
+						newFrame.frameType = SerializeFrameType::ArrayElement;
+
+						size_t elementSize;
+
+						type->serializer(curPtr, newFrame.ptr, elementSize, exData.length);
+
+						newFrame.size = elementSize * exData.length;
+						newFrame.exData = std::move(exData);
+
+						if (!context->frames.pushBack(std::move(newFrame)))
+							return OutOfMemoryError::alloc();
+
+						break;
+					}
+					default:
+						std::terminate();
 				}
 
 				++exData.idxMember;
@@ -167,7 +198,22 @@ INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *con
 			}
 		}
 	}
+
+	return {};
 }
 
 INTERBUF_API ExceptionPointer interbuf::serializeStruct(peff::Alloc *allocator, const void *ptr, size_t size, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout) {
+	SerializeContext context(allocator, writer);
+
+	SerializeFrame newFrame;
+
+	newFrame.frameType = SerializeFrameType::StructMember;
+	newFrame.exData = StructMemberSerializeFrameExData(rootLayout);
+	newFrame.ptr = (const char*)ptr;
+	newFrame.size = size;
+
+	if (!context.frames.pushBack(std::move(newFrame)))
+		return OutOfMemoryError::alloc();
+
+	return _doSerializeStruct(&context);
 }
