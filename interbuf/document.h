@@ -181,6 +181,16 @@ namespace interbuf {
 		}
 	};
 
+	class StructDataTypeObject final : public DataTypeObject {
+	public:
+		ObjectPtr<StructLayoutObject> structLayout;
+
+		INTERBUF_API StructDataTypeObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API ~StructDataTypeObject();
+
+		INTERBUF_API void dealloc() noexcept override;
+	};
+
 	class Document {
 	private:
 		INTERBUF_API void _doClearDeferredDestructibleObjects();

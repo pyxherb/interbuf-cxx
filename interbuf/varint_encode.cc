@@ -108,5 +108,8 @@ bool interbuf::decodeVarInt64(const uint8_t *buffer, size_t szBuffer, size_t &sz
 			break;
 	}
 
+	szReadBufferOut = curOff;
+	dataOut = result;
+
 	return true;
 }

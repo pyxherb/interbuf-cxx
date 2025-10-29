@@ -28,6 +28,13 @@ INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeO
 INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::String);
 INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::Bool);
 
+INTERBUF_API StructDataTypeObject::StructDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, FieldTypeKind::Struct) {}
+INTERBUF_API StructDataTypeObject::~StructDataTypeObject() {}
+
+INTERBUF_API void StructDataTypeObject::dealloc() noexcept {
+	peff::destroyAndRelease<StructDataTypeObject>(selfAllocator.get(), this, alignof(StructDataTypeObject));
+}
+
 INTERBUF_API StructLayoutObject::StructLayoutObject(Document* document, peff::Alloc* allocator): Object(document, allocator, ObjectType::StructLayout), _structFields(allocator), _fieldNameIndices(allocator) {
 
 }

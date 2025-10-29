@@ -14,21 +14,21 @@ INTERBUF_API OutOfMemoryError *OutOfMemoryError::alloc() {
 	return &g_outOfMemoryError;
 }
 
-INTERBUF_API PrematuredEndOfBufferError::PrematuredEndOfBufferError(peff::Alloc *allocator)
-	: Exception(ExceptionKind::PrematuredEndOfBuffer) {}
-INTERBUF_API PrematuredEndOfBufferError::~PrematuredEndOfBufferError() {}
+INTERBUF_API IOError::IOError(peff::Alloc *allocator)
+	: Exception(ExceptionKind::IO) {}
+INTERBUF_API IOError::~IOError() {}
 
-INTERBUF_API void PrematuredEndOfBufferError::dealloc() {
-	peff::destroyAndRelease<PrematuredEndOfBufferError>(allocator.get(), this, sizeof(std::max_align_t));
+INTERBUF_API void IOError::dealloc() {
+	peff::destroyAndRelease<IOError>(allocator.get(), this, sizeof(std::max_align_t));
 }
 
-INTERBUF_API PrematuredEndOfBufferError *PrematuredEndOfBufferError::alloc(peff::Alloc *allocator) noexcept {
-	void *buf = allocator->alloc(sizeof(PrematuredEndOfBufferError), sizeof(std::max_align_t));
+INTERBUF_API IOError *IOError::alloc(peff::Alloc *allocator) noexcept {
+	void *buf = allocator->alloc(sizeof(IOError), sizeof(std::max_align_t));
 
 	if (!buf)
 		return nullptr;
 
-	peff::constructAt<PrematuredEndOfBufferError>((PrematuredEndOfBufferError *)buf, allocator);
+	peff::constructAt<IOError>((IOError *)buf, allocator);
 
-	return (PrematuredEndOfBufferError *)buf;
+	return (IOError *)buf;
 }

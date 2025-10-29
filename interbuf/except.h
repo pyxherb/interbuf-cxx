@@ -18,19 +18,19 @@ namespace interbuf {
 
 	extern OutOfMemoryError g_outOfMemoryError;
 
-	class PrematuredEndOfBufferError : public Exception {
+	class IOError : public Exception {
 	public:
 		peff::RcObjectPtr<peff::Alloc> allocator;
 
-		INTERBUF_API PrematuredEndOfBufferError(peff::Alloc *allocator);
-		INTERBUF_API virtual ~PrematuredEndOfBufferError();
+		INTERBUF_API IOError(peff::Alloc *allocator);
+		INTERBUF_API virtual ~IOError();
 
 		INTERBUF_API virtual void dealloc() override;
 
-		INTERBUF_API static PrematuredEndOfBufferError *alloc(peff::Alloc *allocator) noexcept;
+		INTERBUF_API static IOError *alloc(peff::Alloc *allocator) noexcept;
 	};
 
-	INTERBUF_FORCEINLINE ExceptionPointer withOutOfMemoryErrorIfAllocFailed(Exception *exceptionPtr) noexcept {
+	INTERBUF_FORCEINLINE ExceptionPointer withOOMErrorIfAllocFailed(Exception *exceptionPtr) noexcept {
 		if (!exceptionPtr) {
 			return OutOfMemoryError::alloc();
 		}

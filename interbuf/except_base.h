@@ -8,7 +8,7 @@
 namespace interbuf {
 	enum class ExceptionKind {
 		OutOfMemory = 0,
-		PrematuredEndOfBuffer,
+		IO,
 
 		InvalidDataType,
 	};
