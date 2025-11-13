@@ -35,12 +35,20 @@ INTERBUF_API void StructDataTypeObject::dealloc() noexcept {
 	peff::destroyAndRelease<StructDataTypeObject>(selfAllocator.get(), this, alignof(StructDataTypeObject));
 }
 
-INTERBUF_API StructLayoutObject::StructLayoutObject(Document* document, peff::Alloc* allocator): Object(document, allocator, ObjectType::StructLayout), _structFields(allocator), _fieldNameIndices(allocator) {
+INTERBUF_API ArrayDataTypeObject::ArrayDataTypeObject(Document *document, peff::Alloc *allocator): DataTypeObject(document, allocator, FieldTypeKind::Array) {
+}
 
+INTERBUF_API ArrayDataTypeObject::~ArrayDataTypeObject() {
+}
+
+INTERBUF_API void ArrayDataTypeObject::dealloc() noexcept {
+	peff::destroyAndRelease<ArrayDataTypeObject>(selfAllocator.get(), this, alignof(ArrayDataTypeObject));
+}
+
+INTERBUF_API StructLayoutObject::StructLayoutObject(Document *document, peff::Alloc *allocator) : Object(document, allocator, ObjectType::StructLayout), _structFields(allocator), _fieldNameIndices(allocator) {
 }
 
 INTERBUF_API StructLayoutObject::~StructLayoutObject() {
-
 }
 
 INTERBUF_API void StructLayoutObject::dealloc() noexcept {
@@ -61,7 +69,7 @@ INTERBUF_API bool StructLayoutObject::updateFieldNameIndices() noexcept {
 	return true;
 }
 
-INTERBUF_API bool StructLayoutObject::addField(StructField&& field) {
+INTERBUF_API bool StructLayoutObject::addField(StructField &&field) {
 	size_t index = _structFields.size();
 
 	if (!_structFields.pushBack(std::move(field))) {
@@ -79,7 +87,7 @@ INTERBUF_API bool StructLayoutObject::addField(StructField&& field) {
 	return true;
 }
 
-INTERBUF_API bool StructLayoutObject::insertField(size_t index, StructField&& field) {
+INTERBUF_API bool StructLayoutObject::insertField(size_t index, StructField &&field) {
 	size_t size = _structFields.size();
 
 	if (!_structFields.insert(index, std::move(field))) {

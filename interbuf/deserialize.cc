@@ -169,7 +169,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserializeStruct(DeserializeContext 
 
 						DeserializeFrame newFrame;
 
-						auto type = frame.elementType.castTo<ArrayDataTypeObject>();
+						auto type = i.type.castTo<ArrayDataTypeObject>();
 
 						ArrayMemberDeserializeFrameExData exData(type);
 
@@ -179,9 +179,9 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserializeStruct(DeserializeContext 
 
 						uint64_t len;
 						{
+							INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(len));
 							if (peff::getByteOrder())
 								len = peff::swapByteOrder(len);
-							INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(len));
 						}
 
 						INTERBUF_RETURN_IF_EXCEPT(type->deserializer(len, curPtr, newFrame.ptr, elementSize));
