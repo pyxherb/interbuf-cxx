@@ -201,7 +201,7 @@ namespace interbuf {
 		size_t nElements,	 // Element number
 		void *ptr,			 // Pointer to the array structure
 		char *&ptrOut,		 // Pointer out to the array data
-		size_t szElementOut	 // Element size out
+		size_t &szElementOut	 // Element size out
 	);
 
 	class ArrayDataTypeObject final : public DataTypeObject {
