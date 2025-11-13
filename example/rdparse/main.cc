@@ -1,4 +1,5 @@
-#include <interbuf/serdes.h>
+#include <interbuf/serialize.h>
+#include <interbuf/deserialize.h>
 #include <peff/base/deallocable.h>
 #include <peff/advutils/unique_ptr.h>
 #include <cstdio>
@@ -72,6 +73,80 @@ public:
 	}
 	virtual bool writeBool(bool data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+};
+
+class MyReader final : public interbuf::Reader {
+private:
+	FILE *_fp;
+
+public:
+	MyReader(FILE *fp) : _fp(fp) {
+	}
+	virtual ~MyReader() {
+		if (_fp)
+			fclose(_fp);
+	}
+
+	virtual bool read(char *buffer, size_t size) noexcept override {
+		if (!(fread(buffer, size, 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readI8(int8_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readI16(int16_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readI32(int32_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readI64(int64_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readU8(uint8_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readU16(uint16_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readU32(uint32_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readU64(uint64_t &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readF32(float &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readF64(double &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
+			return false;
+		return true;
+	}
+	virtual bool readBool(bool &data) noexcept override {
+		if (!(fread(&data, sizeof(data), 1, _fp)))
 			return false;
 		return true;
 	}
@@ -255,8 +330,6 @@ int main() {
 			return -1;
 		}
 
-		MyWriter writer(fp);
-
 		Test test;
 
 		test.i8 = -12;
@@ -268,7 +341,35 @@ int main() {
 		test.u32 = 0x56;
 		test.u64 = 0x78;
 
-		interbuf::serializeStruct(peff::getDefaultAlloc(), &test, sizeof(test), &writer, structLayout);
+		{
+			MyWriter writer(fp);
+
+			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, sizeof(test), &writer, structLayout);
+		}
+
+		FILE *fp2;
+
+		if (!(fp2 = fopen("test.bin", "rb"))) {
+			puts("Error opening test.bin");
+			return -1;
+		}
+
+		Test test2;
+
+		{
+			MyReader reader(fp2);
+
+			interbuf::deserializeStruct(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, structLayout);
+		}
+
+		assert(test2.i8 == -12);
+		assert(test2.i16 == -34);
+		assert(test2.i32 == -56);
+		assert(test2.i64 == -78);
+		assert(test2.u8 == 0x12);
+		assert(test2.u16 == 0x34);
+		assert(test2.u32 == 0x56);
+		assert(test2.u64 == 0x78);
 	}
 
 	return 0;

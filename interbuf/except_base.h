@@ -84,11 +84,13 @@ namespace interbuf {
 }
 
 #define INTERBUF_UNWRAP_EXCEPT(expr) (expr).unwrap()
-#define INTERBUF_RETURN_IF_EXCEPT(expr)                         \
-	if (interbuf::ExceptionPointer e = (expr); (bool)e) \
-	return e
+#define INTERBUF_RETURN_IF_EXCEPT(expr)                   \
+	if (interbuf::ExceptionPointer e = (expr); (bool)e) { \
+		return e;                                         \
+	} else                                                \
+		;
 #define INTERBUF_RETURN_IF_EXCEPT_WITH_LVAR(name, expr) \
-	if ((bool)(name = (expr)))                         \
+	if ((bool)(name = (expr)))                          \
 		return name;
 
 #endif

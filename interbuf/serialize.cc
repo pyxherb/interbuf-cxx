@@ -1,9 +1,6 @@
-#include "serdes.h"
+#include "serialize.h"
 
 using namespace interbuf;
-
-INTERBUF_API Reader::~Reader() {
-}
 
 INTERBUF_API Writer::~Writer() {
 }
@@ -174,7 +171,187 @@ INTERBUF_API ExceptionPointer interbuf::_doSerializeStruct(SerializeContext *con
 
 						ArrayMemberSerializeFrameExData exData(type);
 
-						newFrame.frameType = SerializeFrameType::ArrayElement;
+						newFrame.frameType = SerializeFrameType::ArrayMember;
+
+						size_t elementSize;
+
+						type->serializer(curPtr, newFrame.ptr, elementSize, exData.length);
+
+						newFrame.size = elementSize * exData.length;
+						newFrame.szPerElement = elementSize;
+						newFrame.exData = std::move(exData);
+						newFrame.elementType = type->elementType;
+
+						if (!context->frames.pushBack(std::move(newFrame)))
+							return OutOfMemoryError::alloc();
+
+						break;
+					}
+					default:
+						std::terminate();
+				}
+
+				++exData.idxMember;
+
+				break;
+			}
+			case SerializeFrameType::ArrayMember: {
+				ArrayMemberSerializeFrameExData &exData = std::get<ArrayMemberSerializeFrameExData>(frame.exData);
+
+				if (!exData.idxMember) {
+					uint64_t len = exData.length;
+					if (peff::getByteOrder())
+						len = peff::swapByteOrder(len);
+					INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(len));
+				}
+				if (exData.idxMember >= exData.length) {
+					context->frames.popBack();
+					break;
+				}
+
+				const char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
+
+				switch (frame.elementType->getFieldTypeKind()) {
+					case FieldTypeKind::I8: {
+						int8_t data = *(int8_t *)curPtr;
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
+						break;
+					}
+					case FieldTypeKind::I16: {
+						int16_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI16(data));
+						break;
+					}
+					case FieldTypeKind::I32: {
+						int32_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI32(data));
+						break;
+					}
+					case FieldTypeKind::I64: {
+						int64_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI64(data));
+						break;
+					}
+					case FieldTypeKind::U8: {
+						uint8_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU8(data));
+						break;
+					}
+					case FieldTypeKind::U16: {
+						uint16_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU16(data));
+						break;
+					}
+					case FieldTypeKind::U32: {
+						uint32_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU32(data));
+						break;
+					}
+					case FieldTypeKind::U64: {
+						uint64_t data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder())
+							data = peff::swapByteOrder(data);
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
+						break;
+					}
+					case FieldTypeKind::F32: {
+						float data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder()) {
+							uint32_t d;
+							d = peff::swapByteOrder(*(uint32_t *)&data);
+							data = *(float *)&data;
+						}
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
+						break;
+					}
+					case FieldTypeKind::F64: {
+						double data;
+
+						memcpy(&data, curPtr, sizeof(data));
+
+						if (peff::getByteOrder()) {
+							uint64_t d;
+							d = peff::swapByteOrder(*(uint64_t *)&data);
+							data = *(double *)&data;
+						}
+
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
+						break;
+					}
+					case FieldTypeKind::Bool: {
+						bool data = *(bool *)curPtr;
+						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(data));
+						break;
+					}
+					case FieldTypeKind::Struct: {
+						const char *data = curPtr;
+
+						SerializeFrame newFrame;
+
+						newFrame.frameType = SerializeFrameType::StructMember;
+						newFrame.exData = StructMemberSerializeFrameExData(frame.elementType.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.ptr = data;
+						newFrame.size = frame.size - exData.idxMember * frame.szPerElement;
+
+						if (!context->frames.pushBack(std::move(newFrame)))
+							return OutOfMemoryError::alloc();
+
+						break;
+					}
+					case FieldTypeKind::Array: {
+						const char *data = curPtr;
+
+						SerializeFrame newFrame;
+
+						auto type = frame.elementType.castTo<ArrayDataTypeObject>();
+
+						ArrayMemberSerializeFrameExData exData(type);
+
+						newFrame.frameType = SerializeFrameType::ArrayMember;
 
 						size_t elementSize;
 

@@ -1,31 +1,10 @@
-#ifndef _INTERBUF_SERDES_H_
-#define _INTERBUF_SERDES_H_
+#ifndef _INTERBUF_SERIALIZE_H_
+#define _INTERBUF_SERIALIZE_H_
 
 #include "document.h"
 #include <peff/utils/byteord.h>
 
 namespace interbuf {
-	class Reader {
-	public:
-		INTERBUF_API virtual ~Reader();
-
-		[[nodiscard]] virtual bool read(char *buffer, size_t size) noexcept = 0;
-
-		[[nodiscard]] virtual bool readI8(int8_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI16(int16_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI32(int32_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI64(int64_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU8(uint8_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU16(uint16_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU32(uint32_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU64(uint64_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readBool(bool &data) noexcept = 0;
-		[[nodiscard]] virtual bool readF32(float &data) noexcept = 0;
-		[[nodiscard]] virtual bool readF64(double &data) noexcept = 0;
-
-		virtual void dealloc() noexcept = 0;
-	};
-
 	class Writer {
 	public:
 		INTERBUF_API virtual ~Writer();
@@ -63,7 +42,7 @@ namespace interbuf {
 
 	enum class SerializeFrameType {
 		StructMember = 0,
-		ArrayElement,
+		ArrayMember,
 	};
 
 	struct SerializeFrame {
@@ -71,7 +50,8 @@ namespace interbuf {
 		SerializeFrameType frameType;
 		const char *ptr;
 		size_t size;
-		size_t offset = 0;
+		size_t szPerElement;
+		ObjectPtr<DataTypeObject> elementType;
 	};
 
 	struct SerializeContext {

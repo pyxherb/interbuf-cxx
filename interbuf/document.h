@@ -85,7 +85,7 @@ namespace interbuf {
 		}
 	};
 
-	template<FieldTypeKind ftk>
+	template <FieldTypeKind ftk>
 	class SimpleDataTypeObject final : public DataTypeObject {
 	public:
 		INTERBUF_FORCEINLINE SimpleDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, ftk) {}
@@ -132,7 +132,7 @@ namespace interbuf {
 		INTERBUF_FORCEINLINE StructField(peff::String &&name, ObjectPtr<DataTypeObject> type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
 		~StructField() = default;
 
-		INTERBUF_FORCEINLINE StructField& operator=(StructField&& rhs) noexcept {
+		INTERBUF_FORCEINLINE StructField &operator=(StructField &&rhs) noexcept {
 			name = std::move(rhs.name);
 			type = std::move(rhs.type);
 			offset = rhs.offset;
@@ -170,7 +170,7 @@ namespace interbuf {
 			return _structFields;
 		}
 
-		INTERBUF_FORCEINLINE StructField& getNamedField(const std::string_view &name) {
+		INTERBUF_FORCEINLINE StructField &getNamedField(const std::string_view &name) {
 			assert(_isFieldNameIndicesValid);
 			return _structFields.at(_fieldNameIndices.at(name));
 		}
@@ -191,12 +191,24 @@ namespace interbuf {
 		INTERBUF_API void dealloc() noexcept override;
 	};
 
-	typedef void (*ArraySerializer)(const void *ptr, const char *& ptrOut, size_t &szElementOut, size_t &lengthOut);
+	typedef void (*ArraySerializer)(
+		const void *ptr,	   // Pointer to the array structure
+		const char *&ptrOut,   // Pointer out to the array data
+		size_t &szElementOut,  // Element size out
+		size_t &lengthOut	   // Length out
+	);
+	typedef ExceptionPointer (*ArrayDeserializer)(
+		size_t nElements,	 // Element number
+		void *ptr,			 // Pointer to the array structure
+		char *&ptrOut,		 // Pointer out to the array data
+		size_t szElementOut	 // Element size out
+	);
 
 	class ArrayDataTypeObject final : public DataTypeObject {
 	public:
 		ObjectPtr<DataTypeObject> elementType;
 		ArraySerializer serializer = nullptr;
+		ArrayDeserializer deserializer = nullptr;
 
 		INTERBUF_API ArrayDataTypeObject(Document *document, peff::Alloc *allocator);
 		INTERBUF_API ~ArrayDataTypeObject();
