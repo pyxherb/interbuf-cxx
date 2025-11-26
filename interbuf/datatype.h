@@ -19,6 +19,7 @@ namespace interbuf {
 		String,
 		Bool,
 		Struct,
+		Class,
 		Array
 	};
 
@@ -26,6 +27,8 @@ namespace interbuf {
 		DataType = 0,
 		StructLayout,
 		StructInstance,
+		ClassLayout,
+		ClassInstance
 	};
 }
 

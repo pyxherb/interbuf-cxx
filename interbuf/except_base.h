@@ -9,6 +9,8 @@ namespace interbuf {
 	enum class ExceptionKind {
 		OutOfMemory = 0,
 		IO,
+		FieldNameLength,
+		IllegalObjectLayout,
 
 		InvalidDataType,
 	};

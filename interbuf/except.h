@@ -30,6 +30,30 @@ namespace interbuf {
 		INTERBUF_API static IOError *alloc(peff::Alloc *allocator) noexcept;
 	};
 
+	class FieldNameLengthError : public Exception {
+	public:
+		peff::RcObjectPtr<peff::Alloc> allocator;
+
+		INTERBUF_API FieldNameLengthError(peff::Alloc *allocator);
+		INTERBUF_API virtual ~FieldNameLengthError();
+
+		INTERBUF_API virtual void dealloc() override;
+
+		INTERBUF_API static FieldNameLengthError *alloc(peff::Alloc *allocator) noexcept;
+	};
+
+	class IllegalObjectLayoutError : public Exception {
+	public:
+		peff::RcObjectPtr<peff::Alloc> allocator;
+
+		INTERBUF_API IllegalObjectLayoutError(peff::Alloc *allocator);
+		INTERBUF_API virtual ~IllegalObjectLayoutError();
+
+		INTERBUF_API virtual void dealloc() override;
+
+		INTERBUF_API static IllegalObjectLayoutError *alloc(peff::Alloc *allocator) noexcept;
+	};
+
 	INTERBUF_FORCEINLINE ExceptionPointer withOOMErrorIfAllocFailed(Exception *exceptionPtr) noexcept {
 		if (!exceptionPtr) {
 			return OutOfMemoryError::alloc();

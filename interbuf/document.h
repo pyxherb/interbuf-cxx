@@ -21,14 +21,16 @@ namespace interbuf {
 	template <typename T>
 	using ObjectPtr = peff::SharedPtr<T>;
 
+	INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
+
 	class Object {
 	private:
 		Document *_document;
 		Object *_nextDestructible;
 		ObjectDestructor _destructor;
 
-		friend INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
 		friend class Document;
+		friend INTERBUF_API void interbuf::addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
 
 	public:
 		peff::RcObjectPtr<peff::Alloc> selfAllocator;
@@ -46,8 +48,6 @@ namespace interbuf {
 			return _type;
 		}
 	};
-
-	INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
 
 	template <typename T>
 	struct ObjectControlBlock : public peff::SharedPtr<T>::DefaultSharedPtrControlBlock {
@@ -123,17 +123,15 @@ namespace interbuf {
 	INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, SimpleDataTypeObject, FieldTypeKind::Bool);
 
 	struct StructField {
-		peff::String name;
 		ObjectPtr<DataTypeObject> type;
 		size_t offset;
 
-		INTERBUF_FORCEINLINE StructField() : name(nullptr), type({}), offset(0) {}
-		INTERBUF_FORCEINLINE StructField(StructField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
-		INTERBUF_FORCEINLINE StructField(peff::String &&name, ObjectPtr<DataTypeObject> type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
+		INTERBUF_FORCEINLINE StructField() : type({}), offset(0) {}
+		INTERBUF_FORCEINLINE StructField(StructField &&rhs) : type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
+		INTERBUF_FORCEINLINE StructField(ObjectPtr<DataTypeObject> type, size_t offset) : type(type), offset(offset) {}
 		~StructField() = default;
 
 		INTERBUF_FORCEINLINE StructField &operator=(StructField &&rhs) noexcept {
-			name = std::move(rhs.name);
 			type = std::move(rhs.type);
 			offset = rhs.offset;
 
@@ -143,13 +141,60 @@ namespace interbuf {
 
 	class StructLayoutObject final : public Object {
 	private:
-		peff::DynArray<StructField> _structFields;
-		peff::HashMap<std::string_view, size_t> _fieldNameIndices;
-		bool _isFieldNameIndicesValid = false;
+		peff::DynArray<StructField> _fields;
 
 	public:
 		INTERBUF_API StructLayoutObject(Document *document, peff::Alloc *allocator);
 		INTERBUF_API virtual ~StructLayoutObject();
+
+		INTERBUF_API virtual void dealloc() noexcept override;
+
+		[[nodiscard]] INTERBUF_API bool addField(StructField &&field);
+		[[nodiscard]] INTERBUF_API bool insertField(size_t index, StructField &&field);
+
+		INTERBUF_FORCEINLINE const decltype(_fields) &getFields() const {
+			return _fields;
+		}
+	};
+
+	class StructDataTypeObject final : public DataTypeObject {
+	public:
+		ObjectPtr<StructLayoutObject> structLayout;
+
+		INTERBUF_API StructDataTypeObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API ~StructDataTypeObject();
+
+		INTERBUF_API void dealloc() noexcept override;
+	};
+
+	struct ClassField {
+		peff::String name;
+		ObjectPtr<DataTypeObject> type;
+		size_t offset;
+
+		INTERBUF_FORCEINLINE ClassField() : name(nullptr), type({}), offset(0) {}
+		INTERBUF_FORCEINLINE ClassField(ClassField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
+		INTERBUF_FORCEINLINE ClassField(peff::String &&name, ObjectPtr<DataTypeObject> type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
+		~ClassField() = default;
+
+		INTERBUF_FORCEINLINE ClassField &operator=(ClassField &&rhs) noexcept {
+			name = std::move(rhs.name);
+			type = std::move(rhs.type);
+			offset = rhs.offset;
+
+			return *this;
+		}
+	};
+
+	class ClassLayoutObject final : public Object {
+	private:
+		peff::DynArray<ClassField> _fields;
+		peff::HashMap<std::string_view, size_t> _fieldNameIndices;
+		bool _isFieldNameIndicesValid = false;
+
+	public:
+		INTERBUF_API ClassLayoutObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API virtual ~ClassLayoutObject();
 
 		INTERBUF_API virtual void dealloc() noexcept override;
 
@@ -163,30 +208,30 @@ namespace interbuf {
 		}
 		[[nodiscard]] INTERBUF_API bool updateFieldNameIndices() noexcept;
 
-		[[nodiscard]] INTERBUF_API bool addField(StructField &&field);
-		[[nodiscard]] INTERBUF_API bool insertField(size_t index, StructField &&field);
+		[[nodiscard]] INTERBUF_API bool addField(ClassField &&field);
+		[[nodiscard]] INTERBUF_API bool insertField(size_t index, ClassField &&field);
 
-		INTERBUF_FORCEINLINE const decltype(_structFields) &getFields() const {
-			return _structFields;
+		INTERBUF_FORCEINLINE const decltype(_fields) &getFields() const {
+			return _fields;
 		}
 
-		INTERBUF_FORCEINLINE StructField &getNamedField(const std::string_view &name) {
+		INTERBUF_FORCEINLINE ClassField &getNamedField(const std::string_view &name) {
 			assert(_isFieldNameIndicesValid);
-			return _structFields.at(_fieldNameIndices.at(name));
+			return _fields.at(_fieldNameIndices.at(name));
 		}
 
-		INTERBUF_FORCEINLINE const StructField &getNamedField(const std::string_view &name) const {
+		INTERBUF_FORCEINLINE const ClassField &getNamedField(const std::string_view &name) const {
 			assert(_isFieldNameIndicesValid);
-			return _structFields.at(_fieldNameIndices.at(name));
+			return _fields.at(_fieldNameIndices.at(name));
 		}
 	};
 
-	class StructDataTypeObject final : public DataTypeObject {
+	class ClassDataTypeObject final : public DataTypeObject {
 	public:
-		ObjectPtr<StructLayoutObject> structLayout;
+		ObjectPtr<ClassLayoutObject> classLayout;
 
-		INTERBUF_API StructDataTypeObject(Document *document, peff::Alloc *allocator);
-		INTERBUF_API ~StructDataTypeObject();
+		INTERBUF_API ClassDataTypeObject(Document *document, peff::Alloc *allocator);
+		INTERBUF_API ~ClassDataTypeObject();
 
 		INTERBUF_API void dealloc() noexcept override;
 	};

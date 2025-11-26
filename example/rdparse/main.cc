@@ -177,21 +177,14 @@ int main() {
 			std::terminate();
 		}
 
-		peff::String name(peff::getDefaultAlloc());
 		interbuf::ObjectPtr<interbuf::DataTypeObject> dataType;
 		interbuf::StructField field;
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("i8")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::I8DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, i8) };
+			field = { std::move(dataType), offsetof(Test, i8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -199,17 +192,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("i16")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::I16DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, i16) };
+			field = { std::move(dataType), offsetof(Test, i16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -217,17 +204,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("i32")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::I32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, i32) };
+			field = { std::move(dataType), offsetof(Test, i32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -235,17 +216,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("i64")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::I64DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, i64) };
+			field = { std::move(dataType), offsetof(Test, i64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -253,17 +228,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("u8")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::U8DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, u8) };
+			field = { std::move(dataType), offsetof(Test, u8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -271,17 +240,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("u16")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::U16DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, u16) };
+			field = { std::move(dataType), offsetof(Test, u16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -289,17 +252,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("u32")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::U32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, u32) };
+			field = { std::move(dataType), offsetof(Test, u32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -307,17 +264,11 @@ int main() {
 		}
 
 		{
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("u64")) {
-				std::terminate();
-			}
-
 			if (!(dataType = interbuf::makeObject<interbuf::U64DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
 			}
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, u64) };
+			field = { std::move(dataType), offsetof(Test, u64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -326,12 +277,6 @@ int main() {
 
 		{
 			interbuf::ObjectPtr<interbuf::ArrayDataTypeObject> arrayDataType;
-
-			name = { peff::getDefaultAlloc() };
-
-			if (!name.build("s")) {
-				std::terminate();
-			}
 
 			if (!(dataType = (arrayDataType = interbuf::makeObject<interbuf::ArrayDataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc())).castTo<interbuf::DataTypeObject>())) {
 				std::terminate();
@@ -359,7 +304,7 @@ int main() {
 				return {};
 			};
 
-			field = { std::move(name), std::move(dataType), offsetof(Test, s) };
+			field = { std::move(dataType), offsetof(Test, s) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -388,7 +333,7 @@ int main() {
 		{
 			MyWriter writer(fp);
 
-			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, sizeof(test), &writer, structLayout);
+			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, &writer, structLayout);
 		}
 
 		FILE *fp2;

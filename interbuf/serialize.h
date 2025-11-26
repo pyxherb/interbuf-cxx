@@ -31,6 +31,14 @@ namespace interbuf {
 		INTERBUF_API ~StructMemberSerializeFrameExData();
 	};
 
+	struct ClassMemberSerializeFrameExData {
+		ObjectPtr<ClassLayoutObject> layout;
+		size_t idxMember = 0;
+
+		INTERBUF_FORCEINLINE ClassMemberSerializeFrameExData(ObjectPtr<ClassLayoutObject> layout) : layout(layout) {}
+		INTERBUF_API ~ClassMemberSerializeFrameExData();
+	};
+
 	struct ArrayMemberSerializeFrameExData {
 		ObjectPtr<ArrayDataTypeObject> dataType;
 		size_t length = 0;
@@ -42,14 +50,14 @@ namespace interbuf {
 
 	enum class SerializeFrameType {
 		StructMember = 0,
+		ClassMember,
 		ArrayMember,
 	};
 
 	struct SerializeFrame {
-		std::variant<std::monostate, StructMemberSerializeFrameExData, ArrayMemberSerializeFrameExData> exData;
+		std::variant<std::monostate, StructMemberSerializeFrameExData, ClassMemberSerializeFrameExData, ArrayMemberSerializeFrameExData> exData;
 		SerializeFrameType frameType;
 		const char *ptr;
-		size_t size;
 		size_t szPerElement;
 		ObjectPtr<DataTypeObject> elementType;
 	};
@@ -62,13 +70,14 @@ namespace interbuf {
 		INTERBUF_FORCEINLINE SerializeContext(
 			peff::Alloc *allocator,
 			Writer *writer)
-			: frames(allocator),
+			: allocator(allocator),
+			  frames(allocator),
 			  writer(writer) {}
 		INTERBUF_API ~SerializeContext();
 	};
 
-	INTERBUF_API ExceptionPointer _doSerializeStruct(SerializeContext *context);
-	INTERBUF_API ExceptionPointer serializeStruct(peff::Alloc *allocator, const void *ptr, size_t size, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout);
+	INTERBUF_API ExceptionPointer _doSerialize(SerializeContext *context);
+	INTERBUF_API ExceptionPointer serializeStruct(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout);
 }
 
 #define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \

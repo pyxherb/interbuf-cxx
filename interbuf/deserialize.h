@@ -32,6 +32,15 @@ namespace interbuf {
 		INTERBUF_API ~StructMemberDeserializeFrameExData();
 	};
 
+	struct ClassMemberDeserializeFrameExData {
+		ObjectPtr<ClassLayoutObject> layout;
+		size_t nMembers = 0;
+		size_t idxMember = 0;
+
+		INTERBUF_FORCEINLINE ClassMemberDeserializeFrameExData(ObjectPtr<ClassLayoutObject> layout) : layout(layout) {}
+		INTERBUF_API ~ClassMemberDeserializeFrameExData();
+	};
+
 	struct ArrayMemberDeserializeFrameExData {
 		ObjectPtr<ArrayDataTypeObject> dataType;
 		size_t length = 0;
@@ -43,14 +52,14 @@ namespace interbuf {
 
 	enum class DeserializeFrameType {
 		StructMember = 0,
+		ClassMember,
 		ArrayMember,
 	};
 
 	struct DeserializeFrame {
-		std::variant<std::monostate, StructMemberDeserializeFrameExData, ArrayMemberDeserializeFrameExData> exData;
+		std::variant<std::monostate, StructMemberDeserializeFrameExData, ClassMemberDeserializeFrameExData, ArrayMemberDeserializeFrameExData> exData;
 		DeserializeFrameType frameType;
 		char *ptr;
-		size_t size;
 		size_t szPerElement;
 		ObjectPtr<DataTypeObject> elementType;
 	};
@@ -68,7 +77,7 @@ namespace interbuf {
 		INTERBUF_API ~DeserializeContext();
 	};
 
-	INTERBUF_API ExceptionPointer _doDeserializeStruct(DeserializeContext *context);
+	INTERBUF_API ExceptionPointer _doDeserialize(DeserializeContext *context);
 	INTERBUF_API ExceptionPointer deserializeStruct(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout);
 }
 
