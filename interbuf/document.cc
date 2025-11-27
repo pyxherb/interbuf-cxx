@@ -42,7 +42,7 @@ INTERBUF_API void ClassDataTypeObject::dealloc() noexcept {
 	peff::destroyAndRelease<ClassDataTypeObject>(selfAllocator.get(), this, alignof(ClassDataTypeObject));
 }
 
-INTERBUF_API ArrayDataTypeObject::ArrayDataTypeObject(Document *document, peff::Alloc *allocator): DataTypeObject(document, allocator, FieldTypeKind::Array) {
+INTERBUF_API ArrayDataTypeObject::ArrayDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, FieldTypeKind::Array) {
 }
 
 INTERBUF_API ArrayDataTypeObject::~ArrayDataTypeObject() {
@@ -114,10 +114,8 @@ INTERBUF_API bool ClassLayoutObject::addField(ClassField &&field) {
 	}
 
 	if (_isFieldNameIndicesValid) {
-		if (!index) {
-			if (!(_fieldNameIndices.insert(_fields.at(index).name, +index))) {
-				return false;
-			}
+		if (!(_fieldNameIndices.insert(_fields.at(index).name, +index))) {
+			return false;
 		}
 	}
 

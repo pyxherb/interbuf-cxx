@@ -78,6 +78,7 @@ namespace interbuf {
 
 	INTERBUF_API ExceptionPointer _doSerialize(SerializeContext *context);
 	INTERBUF_API ExceptionPointer serializeStruct(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout);
+	INTERBUF_API ExceptionPointer serializeClass(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<ClassLayoutObject> rootLayout);
 }
 
 #define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \

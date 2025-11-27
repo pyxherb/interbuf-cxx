@@ -3,7 +3,7 @@
 
 #include <peff/base/basedefs.h>
 
-#if INTERBUF_DYNAMIC_LINK
+#if !INTERBUF_STATIC_LINK
 	#if defined(_MSC_VER)
 		#define INTERBUF_DLLEXPORT __declspec(dllexport)
 		#define INTERBUF_DLLIMPORT __declspec(dllimport)

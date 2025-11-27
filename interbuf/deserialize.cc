@@ -206,6 +206,11 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 			case DeserializeFrameType::ClassMember: {
 				ClassMemberDeserializeFrameExData &exData = std::get<ClassMemberDeserializeFrameExData>(frame.exData);
 
+				if (exData.idxMember >= exData.nMembers) {
+					context->frames.popBack();
+					break;
+				}
+
 				uint64_t length;
 				{
 					INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(length));
@@ -221,6 +226,8 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				peff::String name(context->allocator.get());
 				if (!name.resize((size_t)length))
 					return OutOfMemoryError::alloc();
+
+				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->read(name.data(), (size_t)length));
 
 				auto &i = exData.layout->getNamedField(name);
 				name.clear();
@@ -588,6 +595,33 @@ INTERBUF_API ExceptionPointer interbuf::deserializeStruct(peff::Alloc *allocator
 
 	newFrame.frameType = DeserializeFrameType::StructMember;
 	newFrame.exData = StructMemberDeserializeFrameExData(rootLayout);
+	newFrame.ptr = (char *)ptr;
+
+	if (!context.frames.pushBack(std::move(newFrame)))
+		return OutOfMemoryError::alloc();
+
+	return _doDeserialize(&context);
+}
+
+INTERBUF_API ExceptionPointer interbuf::deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout) {
+	DeserializeContext context(allocator, reader);
+
+	uint64_t nMembers;
+	{
+		INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context.allocator.get(), context.reader->readU64(nMembers));
+
+		if (peff::getByteOrder())
+			nMembers = peff::swapByteOrder(nMembers);
+	}
+
+	// TODO: Add detailed information.
+	if (nMembers > SIZE_MAX)
+		return FieldNameLengthError::alloc(context.allocator.get());
+
+	DeserializeFrame newFrame;
+
+	newFrame.frameType = DeserializeFrameType::ClassMember;
+	newFrame.exData = ClassMemberDeserializeFrameExData(rootLayout, nMembers);
 	newFrame.ptr = (char *)ptr;
 
 	if (!context.frames.pushBack(std::move(newFrame)))

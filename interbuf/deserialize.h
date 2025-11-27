@@ -37,7 +37,7 @@ namespace interbuf {
 		size_t nMembers = 0;
 		size_t idxMember = 0;
 
-		INTERBUF_FORCEINLINE ClassMemberDeserializeFrameExData(ObjectPtr<ClassLayoutObject> layout) : layout(layout) {}
+		INTERBUF_FORCEINLINE ClassMemberDeserializeFrameExData(ObjectPtr<ClassLayoutObject> layout, size_t nMembers) : layout(layout), nMembers(nMembers) {}
 		INTERBUF_API ~ClassMemberDeserializeFrameExData();
 	};
 
@@ -72,13 +72,15 @@ namespace interbuf {
 		INTERBUF_FORCEINLINE DeserializeContext(
 			peff::Alloc *allocator,
 			Reader *reader)
-			: frames(allocator),
+			: allocator(allocator),
+			  frames(allocator),
 			  reader(reader) {}
 		INTERBUF_API ~DeserializeContext();
 	};
 
 	INTERBUF_API ExceptionPointer _doDeserialize(DeserializeContext *context);
 	INTERBUF_API ExceptionPointer deserializeStruct(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout);
+	INTERBUF_API ExceptionPointer deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout);
 }
 
 #define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \

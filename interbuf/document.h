@@ -190,7 +190,7 @@ namespace interbuf {
 	private:
 		peff::DynArray<ClassField> _fields;
 		peff::HashMap<std::string_view, size_t> _fieldNameIndices;
-		bool _isFieldNameIndicesValid = false;
+		bool _isFieldNameIndicesValid = true;
 
 	public:
 		INTERBUF_API ClassLayoutObject(Document *document, peff::Alloc *allocator);

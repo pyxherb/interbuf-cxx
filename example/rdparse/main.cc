@@ -164,6 +164,11 @@ struct Test {
 	uint8_t s[16];
 };
 
+struct ClassTest {
+	uint32_t u32;
+	float f32;
+};
+
 int main() {
 #ifdef _MSC_VER
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -286,23 +291,23 @@ int main() {
 				std::terminate();
 			}
 
-			arrayDataType->serializer = [](const void *ptr,
-											const char *&ptrOut,
-											size_t &szElementOut,
-											size_t &lengthOut) {
-				ptrOut = (const char *)ptr;
-				szElementOut = sizeof(uint8_t);
-				lengthOut = std::size(std::declval<Test>().s);
-			};
+			arrayDataType->serializer = [](const void* ptr,
+				const char*& ptrOut,
+				size_t& szElementOut,
+				size_t& lengthOut) {
+					ptrOut = (const char*)ptr;
+					szElementOut = sizeof(uint8_t);
+					lengthOut = std::size(std::declval<Test>().s);
+				};
 
 			arrayDataType->deserializer = [](size_t nElements,
-											  void *ptr,
-											  char *&ptrOut,
-											  size_t &szElementOut) -> interbuf::ExceptionPointer {
-				szElementOut = sizeof(uint8_t);
-				ptrOut = (char*)ptr;
-				return {};
-			};
+				void* ptr,
+				char*& ptrOut,
+				size_t& szElementOut) -> interbuf::ExceptionPointer {
+					szElementOut = sizeof(uint8_t);
+					ptrOut = (char*)ptr;
+					return {};
+				};
 
 			field = { std::move(dataType), offsetof(Test, s) };
 
@@ -311,7 +316,7 @@ int main() {
 			}
 		}
 
-		FILE *fp;
+		FILE* fp;
 
 		if (!(fp = fopen("test.bin", "wb"))) {
 			puts("Error opening test.bin");
@@ -336,7 +341,7 @@ int main() {
 			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, &writer, structLayout);
 		}
 
-		FILE *fp2;
+		FILE* fp2;
 
 		if (!(fp2 = fopen("test.bin", "rb"))) {
 			puts("Error opening test.bin");
@@ -362,6 +367,81 @@ int main() {
 
 		for (size_t i = 0; i < std::size(test.s); ++i)
 			assert(test.s[i] == 0xa1);
+	}
+
+	{
+		interbuf::ObjectPtr<interbuf::ClassLayoutObject> classLayout;
+
+		if (!(classLayout = interbuf::makeObject<interbuf::ClassLayoutObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()))) {
+			std::terminate();
+		}
+
+		interbuf::ObjectPtr<interbuf::DataTypeObject> dataType;
+		interbuf::ClassField field;
+		peff::String fieldName(peff::getDefaultAlloc());
+		{
+			if (!(dataType = interbuf::makeObject<interbuf::U32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
+				std::terminate();
+			}
+
+			if (!fieldName.build("u32"))
+				std::terminate();
+			field = { std::move(fieldName), std::move(dataType), offsetof(ClassTest, u32) };
+
+			if (!classLayout->addField(std::move(field))) {
+				std::terminate();
+			}
+		}
+		{
+			if (!(dataType = interbuf::makeObject<interbuf::F32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
+				std::terminate();
+			}
+
+			fieldName = peff::String(peff::getDefaultAlloc());
+			if (!fieldName.build("f32"))
+				std::terminate();
+			field = { std::move(fieldName), std::move(dataType), offsetof(ClassTest, f32) };
+
+			if (!classLayout->addField(std::move(field))) {
+				std::terminate();
+			}
+		}
+
+		FILE *fp;
+
+		if (!(fp = fopen("test.bin", "wb"))) {
+			puts("Error opening test.bin");
+			return -1;
+		}
+
+		ClassTest test;
+
+		test.u32 = 0x12;
+		test.f32 = 0.34f;
+
+		{
+			MyWriter writer(fp);
+
+			interbuf::serializeClass(peff::getDefaultAlloc(), &test, &writer, classLayout);
+		}
+
+		FILE *fp2;
+
+		if (!(fp2 = fopen("test.bin", "rb"))) {
+			puts("Error opening test.bin");
+			return -1;
+		}
+
+		ClassTest test2;
+
+		{
+			MyReader reader(fp2);
+
+			interbuf::deserializeClass(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, classLayout);
+		}
+
+		assert(test2.u32 == 0x12);
+		assert(test2.f32 == 0.34f);
 	}
 
 	return 0;

@@ -587,7 +587,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						size_t elementSize;
 
 						type->serializer(curPtr, newFrame.ptr, elementSize, exData.length);
-;
+						;
 						newFrame.exData = std::move(exData);
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -616,7 +616,31 @@ INTERBUF_API ExceptionPointer interbuf::serializeStruct(peff::Alloc *allocator, 
 
 	newFrame.frameType = SerializeFrameType::StructMember;
 	newFrame.exData = StructMemberSerializeFrameExData(rootLayout);
-	newFrame.ptr = (const char*)ptr;
+	newFrame.ptr = (const char *)ptr;
+
+	if (!context.frames.pushBack(std::move(newFrame)))
+		return OutOfMemoryError::alloc();
+
+	return _doSerialize(&context);
+}
+
+INTERBUF_API ExceptionPointer interbuf::serializeClass(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<ClassLayoutObject> rootLayout) {
+	SerializeContext context(allocator, writer);
+
+	if (rootLayout->getFields().size() >= SIZE_MAX)
+		std::terminate();
+
+	INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(
+		context.allocator.get(), context.writer->writeU64(
+									 peff::getByteOrder()
+										 ? peff::swapByteOrder((uint64_t)rootLayout->getFields().size())
+										 : (uint64_t)rootLayout->getFields().size()));
+
+	SerializeFrame newFrame;
+
+	newFrame.frameType = SerializeFrameType::ClassMember;
+	newFrame.exData = ClassMemberSerializeFrameExData(rootLayout);
+	newFrame.ptr = (const char *)ptr;
 
 	if (!context.frames.pushBack(std::move(newFrame)))
 		return OutOfMemoryError::alloc();
