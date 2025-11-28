@@ -19,15 +19,11 @@
 #define INTERBUF_FORCEINLINE PEFF_FORCEINLINE
 
 #if defined(_MSC_VER)
-	#define INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) \
-		apiModifier extern template class name<__VA_ARGS__>;
-	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) \
-		apiModifier template class name<__VA_ARGS__>;
+	#define INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) extern template class apiModifier name<__VA_ARGS__>
+	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) template class apiModifier name<__VA_ARGS__>
 #elif defined(__GNUC__) || defined(__clang__)
-	#define INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) \
-		extern template class apiModifier name<__VA_ARGS__>;
-	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) \
-		template class name<__VA_ARGS__>;
+	#define INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) extern template class apiModifier name<__VA_ARGS__>
+	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...) template class name<__VA_ARGS__>
 #else
 	#define INTERBUF_DECL_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...)
 	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...)

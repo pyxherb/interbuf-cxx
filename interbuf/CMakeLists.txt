@@ -17,7 +17,8 @@ set_target_properties(interbuf PROPERTIES
 )
 
 add_library(interbuf_static STATIC)
-target_compile_definitions(interbuf_static PRIVATE INTERBUF_STATIC_LINK=1 IS_INTERBUF_BASE_BUILDING=1)
+target_compile_definitions(interbuf_static PRIVATE IS_INTERBUF_BASE_BUILDING=1)
+target_compile_definitions(interbuf_static PUBLIC INTERBUF_STATIC_LINK=1 IS_INTERBUF_BASE_BUILDING=1)
 set_target_properties(interbuf_static PROPERTIES CXX_STANDARD 17)
 target_sources(interbuf_static PRIVATE ${HEADERS} ${SRC})
 target_link_libraries(interbuf_static PUBLIC peff_base_static peff_utils_static peff_containers_static)

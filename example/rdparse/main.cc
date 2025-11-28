@@ -189,7 +189,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, i8) };
+			field = { std::move(dataType), interbuf_offsetof(Test, i8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -201,7 +201,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, i16) };
+			field = { std::move(dataType), interbuf_offsetof(Test, i16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -213,7 +213,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, i32) };
+			field = { std::move(dataType), interbuf_offsetof(Test, i32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -225,7 +225,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, i64) };
+			field = { std::move(dataType), interbuf_offsetof(Test, i64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -237,7 +237,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, u8) };
+			field = { std::move(dataType), interbuf_offsetof(Test, u8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -249,7 +249,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, u16) };
+			field = { std::move(dataType), interbuf_offsetof(Test, u16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -261,7 +261,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, u32) };
+			field = { std::move(dataType), interbuf_offsetof(Test, u32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -273,7 +273,7 @@ int main() {
 				std::terminate();
 			}
 
-			field = { std::move(dataType), offsetof(Test, u64) };
+			field = { std::move(dataType), interbuf_offsetof(Test, u64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -309,7 +309,7 @@ int main() {
 					return {};
 				};
 
-			field = { std::move(dataType), offsetof(Test, s) };
+			field = { std::move(dataType), interbuf_offsetof(Test, s) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -386,7 +386,7 @@ int main() {
 
 			if (!fieldName.build("u32"))
 				std::terminate();
-			field = { std::move(fieldName), std::move(dataType), offsetof(ClassTest, u32) };
+			field = { std::move(fieldName), std::move(dataType), interbuf_offsetof(ClassTest, u32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();
@@ -400,7 +400,7 @@ int main() {
 			fieldName = peff::String(peff::getDefaultAlloc());
 			if (!fieldName.build("f32"))
 				std::terminate();
-			field = { std::move(fieldName), std::move(dataType), offsetof(ClassTest, f32) };
+			field = { std::move(fieldName), std::move(dataType), interbuf_offsetof(ClassTest, f32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();
