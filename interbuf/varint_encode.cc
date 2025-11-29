@@ -90,16 +90,16 @@ void interbuf::encodeVarInt64(uint64_t data, uint8_t buffer[10], size_t &szBuffe
 	}
 }
 
-bool interbuf::decodeVarInt64(const uint8_t *buffer, size_t szBuffer, size_t &szReadBufferOut, uint64_t &dataOut) {
+bool interbuf::decodeVarInt64(VarInt64DecodeReader decoderReader, void *userData, uint64_t &dataOut, size_t &szReadBufferOut) {
 	uint64_t result = 0;
 	size_t curOff = 0;
 
 	uint8_t b;
 	for (uint8_t i = 0; i < 10; ++i) {
-		if (curOff++ >= szBuffer)
+		if (!decoderReader(userData, b))
 			return false;
 
-		b = buffer[i];
+		++curOff;
 
 		result <<= 7;
 		result |= b & 0b01111111;

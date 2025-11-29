@@ -83,7 +83,7 @@ namespace interbuf {
 
 #define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \
 	if (!(e))                                                        \
-		return withOOMErrorIfAllocFailed(IOError::alloc(allocator)); \
+		return withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator)); \
 	else                                                             \
 		;
 
