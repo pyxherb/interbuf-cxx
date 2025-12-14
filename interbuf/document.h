@@ -18,6 +18,12 @@ namespace interbuf {
 
 	class Object;
 
+	struct StructBase {
+	};
+
+	class ClassBase {
+	};
+
 	typedef void (*ObjectDestructor)(Object *astNode);
 
 	template <typename T>
@@ -141,11 +147,23 @@ namespace interbuf {
 		}
 	};
 
+	/// @brief The blank structure instance constructor type.
+	/// @param allocator Allocator for object creation.
+	/// @return The created object, nullptr if failed (OOM occurred.)
+	typedef ObjectPtr<StructBase> (*BlankStructConstructor)(peff::Alloc *allocator);
+
+	/// @brief The blank class instance constructor type.
+	/// @param allocator Allocator for object creation.
+	/// @return The created object, nullptr if failed (OOM occurred.)
+	typedef ObjectPtr<ClassBase> (*BlankClassConstructor)(peff::Alloc *allocator);
+
 	class StructLayoutObject final : public Object {
 	private:
 		peff::DynArray<StructField> _fields;
 
 	public:
+		BlankStructConstructor constructor = nullptr;
+
 		INTERBUF_API StructLayoutObject(Document *document, peff::Alloc *allocator);
 		INTERBUF_API virtual ~StructLayoutObject();
 
@@ -195,6 +213,8 @@ namespace interbuf {
 		bool _isFieldNameIndicesValid = true;
 
 	public:
+		BlankClassConstructor constructor = nullptr;
+
 		INTERBUF_API ClassLayoutObject(Document *document, peff::Alloc *allocator);
 		INTERBUF_API virtual ~ClassLayoutObject();
 
@@ -245,10 +265,10 @@ namespace interbuf {
 		size_t &lengthOut	   // Length out
 	);
 	typedef ExceptionPointer (*ArrayDeserializer)(
-		size_t nElements,	 // Element number
-		void *ptr,			 // Pointer to the array structure
-		char *&ptrOut,		 // Pointer out to the array data
-		size_t &szElementOut	 // Element size out
+		size_t nElements,	  // Element number
+		void *ptr,			  // Pointer to the array structure
+		char *&ptrOut,		  // Pointer out to the array data
+		size_t &szElementOut  // Element size out
 	);
 
 	class ArrayDataTypeObject final : public DataTypeObject {

@@ -157,7 +157,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::StructMember;
 						newFrame.exData = StructMemberSerializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char*)((const ObjectPtr<StructBase>*)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();
@@ -171,7 +171,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
 						newFrame.exData = ClassMemberSerializeFrameExData(i.type.castTo<ClassDataTypeObject>()->classLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();
@@ -360,7 +360,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::StructMember;
 						newFrame.exData = StructMemberSerializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char *)((const ObjectPtr<StructBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();
@@ -374,7 +374,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
 						newFrame.exData = ClassMemberSerializeFrameExData(i.type.castTo<ClassDataTypeObject>()->classLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();
@@ -552,7 +552,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::StructMember;
 						newFrame.exData = StructMemberSerializeFrameExData(frame.elementType.castTo<StructDataTypeObject>()->structLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char *)((const ObjectPtr<StructBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();
@@ -566,7 +566,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
 						newFrame.exData = ClassMemberSerializeFrameExData(frame.elementType.castTo<ClassDataTypeObject>()->classLayout);
-						newFrame.ptr = data;
+						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
 							return OutOfMemoryError::alloc();

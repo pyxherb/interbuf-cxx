@@ -83,7 +83,7 @@ namespace interbuf {
 	INTERBUF_API ExceptionPointer deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout);
 }
 
-#define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \
+#define INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(allocator, e)         \
 	if (!(e))                                                        \
 		return withOOMErrorIfAllocFailed(IOError::alloc(allocator)); \
 	else                                                             \

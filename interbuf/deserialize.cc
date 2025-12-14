@@ -37,14 +37,14 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				switch (i.type->getFieldTypeKind()) {
 					case FieldTypeKind::I8: {
 						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
 					case FieldTypeKind::I16: {
 						int16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -55,7 +55,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I32: {
 						int32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -66,7 +66,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I64: {
 						int64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -77,7 +77,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U8: {
 						uint8_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -88,7 +88,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U16: {
 						uint16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -99,7 +99,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U32: {
 						uint32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -110,7 +110,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U64: {
 						uint64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -121,7 +121,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F32: {
 						float data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
 
 						if (peff::getByteOrder()) {
 							uint32_t d;
@@ -135,7 +135,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F64: {
 						double data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
 
 						if (peff::getByteOrder()) {
 							uint64_t d;
@@ -148,12 +148,20 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					}
 					case FieldTypeKind::Bool: {
 						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readBool(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
 					case FieldTypeKind::Struct: {
-						char *data = curPtr;
+						auto sl = i.type.castTo<StructDataTypeObject>()->structLayout;
+						ObjectPtr<StructBase> sb = sl->constructor(context->allocator.get());
+
+						if (!sb)
+							return OutOfMemoryError::alloc();
+
+						(*(ObjectPtr<StructBase> *)curPtr) = sb;
+
+						char *data = (char *)sb.get();
 
 						DeserializeFrame newFrame;
 
@@ -181,7 +189,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						uint64_t len;
 						{
-							INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(len));
+							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
 							if (peff::getByteOrder())
 								len = peff::swapByteOrder(len);
 						}
@@ -213,7 +221,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				uint64_t length;
 				{
-					INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(length));
+					INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(length));
 
 					if (peff::getByteOrder())
 						length = peff::swapByteOrder(length);
@@ -227,7 +235,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				if (!name.resize((size_t)length))
 					return OutOfMemoryError::alloc();
 
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->read(name.data(), (size_t)length));
+				INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->read(name.data(), (size_t)length));
 
 				auto &i = exData.layout->getNamedField(name);
 				name.clear();
@@ -237,14 +245,14 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				switch (i.type->getFieldTypeKind()) {
 					case FieldTypeKind::I8: {
 						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
 					case FieldTypeKind::I16: {
 						int16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -255,7 +263,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I32: {
 						int32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -266,7 +274,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I64: {
 						int64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -277,7 +285,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U8: {
 						uint8_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -288,7 +296,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U16: {
 						uint16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -299,7 +307,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U32: {
 						uint32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -310,7 +318,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U64: {
 						uint64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -321,7 +329,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F32: {
 						float data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
 
 						if (peff::getByteOrder()) {
 							uint32_t d;
@@ -335,7 +343,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F64: {
 						double data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
 
 						if (peff::getByteOrder()) {
 							uint64_t d;
@@ -348,7 +356,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					}
 					case FieldTypeKind::Bool: {
 						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readBool(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
@@ -381,7 +389,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						uint64_t len;
 						{
-							INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(len));
+							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
 							if (peff::getByteOrder())
 								len = peff::swapByteOrder(len);
 						}
@@ -416,14 +424,14 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				switch (frame.elementType->getFieldTypeKind()) {
 					case FieldTypeKind::I8: {
 						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
 					case FieldTypeKind::I16: {
 						int16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -434,7 +442,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I32: {
 						int32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -445,7 +453,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::I64: {
 						int64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readI64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -456,7 +464,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U8: {
 						uint8_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU8(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -467,7 +475,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U16: {
 						uint16_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU16(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -478,7 +486,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U32: {
 						uint32_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -489,7 +497,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::U64: {
 						uint64_t data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
 
 						if (peff::getByteOrder())
 							data = peff::swapByteOrder(data);
@@ -500,7 +508,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F32: {
 						float data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF32(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
 
 						if (peff::getByteOrder()) {
 							uint32_t d;
@@ -514,7 +522,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					case FieldTypeKind::F64: {
 						double data;
 
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readF64(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
 
 						if (peff::getByteOrder()) {
 							uint64_t d;
@@ -527,7 +535,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 					}
 					case FieldTypeKind::Bool: {
 						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readBool(data));
+						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
@@ -562,7 +570,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						{
 							if (peff::getByteOrder())
 								len = peff::swapByteOrder(len);
-							INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->reader->readU64(len));
+							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
 						}
 
 						INTERBUF_RETURN_IF_EXCEPT(type->deserializer(len, curPtr, newFrame.ptr, elementSize));
@@ -608,7 +616,7 @@ INTERBUF_API ExceptionPointer interbuf::deserializeClass(peff::Alloc *allocator,
 
 	uint64_t nMembers;
 	{
-		INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context.allocator.get(), context.reader->readU64(nMembers));
+		INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context.allocator.get(), context.reader->readU64(nMembers));
 
 		if (peff::getByteOrder())
 			nMembers = peff::swapByteOrder(nMembers);
