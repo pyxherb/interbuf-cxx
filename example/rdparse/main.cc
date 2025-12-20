@@ -182,14 +182,9 @@ int main() {
 			std::terminate();
 		}
 
-		interbuf::ObjectPtr<interbuf::DataTypeObject> dataType;
 		interbuf::StructField field;
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::I8DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, i8) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::I8 }, interbuf_offsetof(Test, i8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -197,11 +192,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::I16DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, i16) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::I16 }, interbuf_offsetof(Test, i16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -209,11 +200,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::I32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, i32) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::I32 }, interbuf_offsetof(Test, i32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -221,11 +208,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::I64DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, i64) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::I64 }, interbuf_offsetof(Test, i64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -233,11 +216,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::U8DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, u8) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::U8 }, interbuf_offsetof(Test, u8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -245,11 +224,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::U16DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, u16) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::U16 }, interbuf_offsetof(Test, u16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -257,11 +232,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::U32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, u32) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(Test, u32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -269,11 +240,7 @@ int main() {
 		}
 
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::U64DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
-			field = { std::move(dataType), interbuf_offsetof(Test, u64) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::U64 }, interbuf_offsetof(Test, u64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -281,42 +248,40 @@ int main() {
 		}
 
 		{
-			interbuf::ObjectPtr<interbuf::ArrayDataTypeObject> arrayDataType;
+			interbuf::ObjectPtr<interbuf::ArrayDataTypeDefObject> arrayDataType;
 
-			if (!(dataType = (arrayDataType = interbuf::makeObject<interbuf::ArrayDataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc())).castTo<interbuf::DataTypeObject>())) {
+			if (!(arrayDataType = interbuf::makeObject<interbuf::ArrayDataTypeDefObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()))) {
 				std::terminate();
 			}
 
-			if (!(arrayDataType->elementType = interbuf::makeObject<interbuf::U8DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
+			arrayDataType->elementType = interbuf::DataType{ interbuf::FieldTypeKind::U8 };
 
-			arrayDataType->serializer = [](const void* ptr,
-				const char*& ptrOut,
-				size_t& szElementOut,
-				size_t& lengthOut) {
-					ptrOut = (const char*)ptr;
-					szElementOut = sizeof(uint8_t);
-					lengthOut = std::size(std::declval<Test>().s);
-				};
+			arrayDataType->serializer = [](const void *ptr,
+											const char *&ptrOut,
+											size_t &szElementOut,
+											size_t &lengthOut) {
+				ptrOut = (const char *)ptr;
+				szElementOut = sizeof(uint8_t);
+				lengthOut = std::size(std::declval<Test>().s);
+			};
 
 			arrayDataType->deserializer = [](size_t nElements,
-				void* ptr,
-				char*& ptrOut,
-				size_t& szElementOut) -> interbuf::ExceptionPointer {
-					szElementOut = sizeof(uint8_t);
-					ptrOut = (char*)ptr;
-					return {};
-				};
+											  void *ptr,
+											  char *&ptrOut,
+											  size_t &szElementOut) -> interbuf::ExceptionPointer {
+				szElementOut = sizeof(uint8_t);
+				ptrOut = (char *)ptr;
+				return {};
+			};
 
-			field = { std::move(dataType), interbuf_offsetof(Test, s) };
+			field = { interbuf::DataType{ interbuf::FieldTypeKind::Array, arrayDataType.castTo<interbuf::Object>() }, interbuf_offsetof(Test, s) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
 			}
 		}
 
-		FILE* fp;
+		FILE *fp;
 
 		if (!(fp = fopen("test.bin", "wb"))) {
 			puts("Error opening test.bin");
@@ -341,7 +306,7 @@ int main() {
 			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, &writer, structLayout);
 		}
 
-		FILE* fp2;
+		FILE *fp2;
 
 		if (!(fp2 = fopen("test.bin", "rb"))) {
 			puts("Error opening test.bin");
@@ -376,31 +341,22 @@ int main() {
 			std::terminate();
 		}
 
-		interbuf::ObjectPtr<interbuf::DataTypeObject> dataType;
 		interbuf::ClassField field;
 		peff::String fieldName(peff::getDefaultAlloc());
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::U32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
 			if (!fieldName.build("u32"))
 				std::terminate();
-			field = { std::move(fieldName), std::move(dataType), interbuf_offsetof(ClassTest, u32) };
+			field = { std::move(fieldName), interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();
 			}
 		}
 		{
-			if (!(dataType = interbuf::makeObject<interbuf::F32DataTypeObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()).castTo<interbuf::DataTypeObject>())) {
-				std::terminate();
-			}
-
 			fieldName = peff::String(peff::getDefaultAlloc());
 			if (!fieldName.build("f32"))
 				std::terminate();
-			field = { std::move(fieldName), std::move(dataType), interbuf_offsetof(ClassTest, f32) };
+			field = { std::move(fieldName), interbuf::DataType{ interbuf::FieldTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();

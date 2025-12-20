@@ -24,7 +24,7 @@ namespace interbuf {
 	};
 
 	enum class ObjectType : uint8_t {
-		DataType = 0,
+		ArrayTypeDef = 0,
 		StructLayout,
 		StructInstance,
 		ClassLayout,

@@ -34,7 +34,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 				const char *curPtr = frame.ptr + i.offset;
 
-				switch (i.type->getFieldTypeKind()) {
+				switch (i.type.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
@@ -156,7 +156,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::StructMember;
-						newFrame.exData = StructMemberSerializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberSerializeFrameExData(i.type.typeDefObject.castTo<StructLayoutObject>());
 						newFrame.ptr = (const char*)((const ObjectPtr<StructBase>*)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -170,7 +170,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
-						newFrame.exData = ClassMemberSerializeFrameExData(i.type.castTo<ClassDataTypeObject>()->classLayout);
+						newFrame.exData = ClassMemberSerializeFrameExData(i.type.typeDefObject.castTo<ClassLayoutObject>());
 						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -183,7 +183,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						SerializeFrame newFrame;
 
-						auto type = i.type.castTo<ArrayDataTypeObject>();
+						auto type = i.type.typeDefObject.castTo<ArrayDataTypeDefObject>();
 
 						ArrayMemberSerializeFrameExData exData(type);
 
@@ -237,7 +237,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 				}
 				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->write(i.name.data(), i.name.size()));
 
-				switch (i.type->getFieldTypeKind()) {
+				switch (i.type.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
@@ -359,7 +359,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::StructMember;
-						newFrame.exData = StructMemberSerializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberSerializeFrameExData(i.type.typeDefObject.castTo<StructLayoutObject>());
 						newFrame.ptr = (const char *)((const ObjectPtr<StructBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -373,7 +373,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
-						newFrame.exData = ClassMemberSerializeFrameExData(i.type.castTo<ClassDataTypeObject>()->classLayout);
+						newFrame.exData = ClassMemberSerializeFrameExData(i.type.typeDefObject.castTo<ClassLayoutObject>());
 						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -386,7 +386,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						SerializeFrame newFrame;
 
-						auto type = i.type.castTo<ArrayDataTypeObject>();
+						auto type = i.type.typeDefObject.castTo<ArrayDataTypeDefObject>();
 
 						ArrayMemberSerializeFrameExData exData(type);
 
@@ -429,7 +429,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 				const char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
 
-				switch (frame.elementType->getFieldTypeKind()) {
+				switch (frame.elementType.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
@@ -551,7 +551,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::StructMember;
-						newFrame.exData = StructMemberSerializeFrameExData(frame.elementType.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberSerializeFrameExData(frame.elementType.typeDefObject.castTo<StructLayoutObject>());
 						newFrame.ptr = (const char *)((const ObjectPtr<StructBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -565,7 +565,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						SerializeFrame newFrame;
 
 						newFrame.frameType = SerializeFrameType::ClassMember;
-						newFrame.exData = ClassMemberSerializeFrameExData(frame.elementType.castTo<ClassDataTypeObject>()->classLayout);
+						newFrame.exData = ClassMemberSerializeFrameExData(frame.elementType.typeDefObject.castTo<ClassLayoutObject>());
 						newFrame.ptr = (const char *)((const ObjectPtr<ClassBase> *)data)->get();
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -578,7 +578,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						SerializeFrame newFrame;
 
-						auto type = frame.elementType.castTo<ArrayDataTypeObject>();
+						auto type = frame.elementType.typeDefObject.castTo<ArrayDataTypeDefObject>();
 
 						ArrayMemberSerializeFrameExData exData(type);
 

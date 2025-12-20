@@ -42,11 +42,11 @@ namespace interbuf {
 	};
 
 	struct ArrayMemberDeserializeFrameExData {
-		ObjectPtr<ArrayDataTypeObject> dataType;
+		DataType dataType;
 		size_t length = 0;
 		size_t idxMember = 0;
 
-		INTERBUF_FORCEINLINE ArrayMemberDeserializeFrameExData(ObjectPtr<ArrayDataTypeObject> dataType) : dataType(dataType) {}
+		INTERBUF_FORCEINLINE ArrayMemberDeserializeFrameExData(DataType dataType) : dataType(dataType) {}
 		INTERBUF_API ~ArrayMemberDeserializeFrameExData();
 	};
 
@@ -61,7 +61,7 @@ namespace interbuf {
 		DeserializeFrameType frameType;
 		char *ptr;
 		size_t szPerElement;
-		ObjectPtr<DataTypeObject> elementType;
+		DataType elementType;
 	};
 
 	struct DeserializeContext {

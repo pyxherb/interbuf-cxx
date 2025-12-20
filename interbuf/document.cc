@@ -9,47 +9,14 @@ INTERBUF_API Object::Object(Document *document, peff::Alloc *allocator, ObjectTy
 INTERBUF_API Object::~Object() {
 }
 
-INTERBUF_API DataTypeObject::DataTypeObject(Document *document, peff::Alloc *allocator, FieldTypeKind fieldTypeKind) : Object(document, allocator, ObjectType::DataType), _fieldTypeKind(fieldTypeKind) {
+INTERBUF_API ArrayDataTypeDefObject::ArrayDataTypeDefObject(Document *document, peff::Alloc *allocator) : Object(document, allocator, ObjectType::ArrayTypeDef) {
 }
 
-INTERBUF_API DataTypeObject::~DataTypeObject() {
+INTERBUF_API ArrayDataTypeDefObject::~ArrayDataTypeDefObject() {
 }
 
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::I8);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::I16);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::I32);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::I64);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::U8);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::U16);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::U32);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::U64);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::F32);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::F64);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::String);
-INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(INTERBUF_API, interbuf::SimpleDataTypeObject, FieldTypeKind::Bool);
-
-INTERBUF_API StructDataTypeObject::StructDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, FieldTypeKind::Struct) {}
-INTERBUF_API StructDataTypeObject::~StructDataTypeObject() {}
-
-INTERBUF_API void StructDataTypeObject::dealloc() noexcept {
-	peff::destroyAndRelease<StructDataTypeObject>(selfAllocator.get(), this, alignof(StructDataTypeObject));
-}
-
-INTERBUF_API ClassDataTypeObject::ClassDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, FieldTypeKind::Struct) {}
-INTERBUF_API ClassDataTypeObject::~ClassDataTypeObject() {}
-
-INTERBUF_API void ClassDataTypeObject::dealloc() noexcept {
-	peff::destroyAndRelease<ClassDataTypeObject>(selfAllocator.get(), this, alignof(ClassDataTypeObject));
-}
-
-INTERBUF_API ArrayDataTypeObject::ArrayDataTypeObject(Document *document, peff::Alloc *allocator) : DataTypeObject(document, allocator, FieldTypeKind::Array) {
-}
-
-INTERBUF_API ArrayDataTypeObject::~ArrayDataTypeObject() {
-}
-
-INTERBUF_API void ArrayDataTypeObject::dealloc() noexcept {
-	peff::destroyAndRelease<ArrayDataTypeObject>(selfAllocator.get(), this, alignof(ArrayDataTypeObject));
+INTERBUF_API void ArrayDataTypeDefObject::dealloc() noexcept {
+	peff::destroyAndRelease<ArrayDataTypeDefObject>(selfAllocator.get(), this, alignof(ArrayDataTypeDefObject));
 }
 
 INTERBUF_API StructLayoutObject::StructLayoutObject(Document *document, peff::Alloc *allocator) : Object(document, allocator, ObjectType::StructLayout), _fields(allocator) {

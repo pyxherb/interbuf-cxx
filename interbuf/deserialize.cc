@@ -34,7 +34,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				char *curPtr = frame.ptr + i.offset;
 
-				switch (i.type->getFieldTypeKind()) {
+				switch (i.type.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
@@ -153,7 +153,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						break;
 					}
 					case FieldTypeKind::Struct: {
-						auto sl = i.type.castTo<StructDataTypeObject>()->structLayout;
+						auto sl = i.type.typeDefObject.castTo<StructLayoutObject>();
 						ObjectPtr<StructBase> sb = sl->constructor(context->allocator.get());
 
 						if (!sb)
@@ -166,7 +166,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						DeserializeFrame newFrame;
 
 						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberDeserializeFrameExData(sl);
 						newFrame.ptr = data;
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -179,9 +179,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						DeserializeFrame newFrame;
 
-						auto type = i.type.castTo<ArrayDataTypeObject>();
-
-						ArrayMemberDeserializeFrameExData exData(type);
+						ArrayMemberDeserializeFrameExData exData(i.type);
 
 						newFrame.frameType = DeserializeFrameType::ArrayMember;
 
@@ -194,7 +192,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 								len = peff::swapByteOrder(len);
 						}
 
-						INTERBUF_RETURN_IF_EXCEPT(type->deserializer(len, curPtr, newFrame.ptr, elementSize));
+						INTERBUF_RETURN_IF_EXCEPT(i.type.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
 
 						newFrame.exData = std::move(exData);
 
@@ -242,7 +240,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				char *curPtr = frame.ptr + i.offset;
 
-				switch (i.type->getFieldTypeKind()) {
+				switch (i.type.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
@@ -366,7 +364,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						DeserializeFrame newFrame;
 
 						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(i.type.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberDeserializeFrameExData(i.type.typeDefObject.castTo<StructLayoutObject>());
 						newFrame.ptr = data;
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -379,9 +377,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						DeserializeFrame newFrame;
 
-						auto type = i.type.castTo<ArrayDataTypeObject>();
-
-						ArrayMemberDeserializeFrameExData exData(type);
+						ArrayMemberDeserializeFrameExData exData(i.type);
 
 						newFrame.frameType = DeserializeFrameType::ArrayMember;
 
@@ -394,7 +390,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 								len = peff::swapByteOrder(len);
 						}
 
-						INTERBUF_RETURN_IF_EXCEPT(type->deserializer(len, curPtr, newFrame.ptr, elementSize));
+						INTERBUF_RETURN_IF_EXCEPT(i.type.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
 
 						newFrame.exData = std::move(exData);
 
@@ -421,7 +417,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
 
-				switch (frame.elementType->getFieldTypeKind()) {
+				switch (frame.elementType.kind) {
 					case FieldTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
@@ -545,7 +541,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						DeserializeFrame newFrame;
 
 						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(frame.elementType.castTo<StructDataTypeObject>()->structLayout);
+						newFrame.exData = StructMemberDeserializeFrameExData(frame.elementType.typeDefObject.castTo<StructLayoutObject>());
 						newFrame.ptr = data;
 
 						if (!context->frames.pushBack(std::move(newFrame)))
@@ -558,9 +554,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						DeserializeFrame newFrame;
 
-						auto type = frame.elementType.castTo<ArrayDataTypeObject>();
-
-						ArrayMemberDeserializeFrameExData exData(type);
+						ArrayMemberDeserializeFrameExData exData(frame.elementType);
 
 						newFrame.frameType = DeserializeFrameType::ArrayMember;
 
@@ -573,7 +567,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
 						}
 
-						INTERBUF_RETURN_IF_EXCEPT(type->deserializer(len, curPtr, newFrame.ptr, elementSize));
+						INTERBUF_RETURN_IF_EXCEPT(frame.elementType.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
 
 						newFrame.exData = std::move(exData);
 
