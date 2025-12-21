@@ -342,21 +342,15 @@ int main() {
 		}
 
 		interbuf::ClassField field;
-		peff::String fieldName(peff::getDefaultAlloc());
 		{
-			if (!fieldName.build("u32"))
-				std::terminate();
-			field = { std::move(fieldName), interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
+			field = { "u32", interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();
 			}
 		}
 		{
-			fieldName = peff::String(peff::getDefaultAlloc());
-			if (!fieldName.build("f32"))
-				std::terminate();
-			field = { std::move(fieldName), interbuf::DataType{ interbuf::FieldTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
+			field = { "f32", interbuf::DataType{ interbuf::FieldTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();

@@ -63,7 +63,7 @@ INTERBUF_API bool ClassLayoutObject::updateFieldNameIndices() noexcept {
 	invalidateFieldNameIndices();
 
 	for (size_t i = 0; i < _fields.size(); ++i) {
-		if (!(_fieldNameIndices.insert(_fields.at(i).name, +i))) {
+		if (!(_fieldNameIndices.insert(std::string_view(_fields.at(i).name), +i))) {
 			return false;
 		}
 	}
@@ -81,7 +81,7 @@ INTERBUF_API bool ClassLayoutObject::addField(ClassField &&field) {
 	}
 
 	if (_isFieldNameIndicesValid) {
-		if (!(_fieldNameIndices.insert(_fields.at(index).name, +index))) {
+		if (!(_fieldNameIndices.insert(std::string_view(_fields.at(index).name), +index))) {
 			return false;
 		}
 	}

@@ -133,13 +133,13 @@ namespace interbuf {
 	};
 
 	struct ClassField {
-		peff::String name;
+		std::string_view name;
 		DataType type;
 		size_t offset;
 
-		INTERBUF_FORCEINLINE ClassField() : name(nullptr), type({}), offset(0) {}
+		INTERBUF_FORCEINLINE ClassField() : name(), type({}), offset(0) {}
 		INTERBUF_FORCEINLINE ClassField(ClassField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
-		INTERBUF_FORCEINLINE ClassField(peff::String &&name, DataType type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
+		INTERBUF_FORCEINLINE ClassField(const std::string_view &name, DataType type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
 		~ClassField() = default;
 
 		INTERBUF_FORCEINLINE ClassField &operator=(ClassField &&rhs) noexcept {
