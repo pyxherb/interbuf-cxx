@@ -35,13 +35,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				char *curPtr = frame.ptr + i.offset;
 
 				switch (i.type.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
@@ -52,7 +52,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
@@ -63,7 +63,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
@@ -74,7 +74,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
@@ -85,7 +85,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
@@ -96,7 +96,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
@@ -107,7 +107,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
@@ -118,7 +118,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
@@ -132,7 +132,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
@@ -146,13 +146,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						auto sl = i.type.typeDefObject.castTo<StructLayoutObject>();
 						ObjectPtr<StructBase> sb = sl->constructor(context->allocator.get());
 
@@ -174,7 +174,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						DeserializeFrame newFrame;
@@ -241,13 +241,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				char *curPtr = frame.ptr + i.offset;
 
 				switch (i.type.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
@@ -258,7 +258,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
@@ -269,7 +269,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
@@ -280,7 +280,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
@@ -291,7 +291,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
@@ -302,7 +302,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
@@ -313,7 +313,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
@@ -324,7 +324,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
@@ -338,7 +338,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
@@ -352,13 +352,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						char *data = curPtr;
 
 						DeserializeFrame newFrame;
@@ -372,7 +372,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						DeserializeFrame newFrame;
@@ -418,13 +418,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 				char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
 
 				switch (frame.elementType.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
 						*((int8_t *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
@@ -435,7 +435,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
@@ -446,7 +446,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
@@ -457,7 +457,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
@@ -468,7 +468,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
@@ -479,7 +479,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
@@ -490,7 +490,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
@@ -501,7 +501,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
@@ -515,7 +515,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
@@ -529,13 +529,13 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 						memcpy(curPtr, &data, sizeof(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data;
 						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
 						*((bool *)curPtr) = data;
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						char *data = curPtr;
 
 						DeserializeFrame newFrame;
@@ -549,7 +549,7 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						DeserializeFrame newFrame;

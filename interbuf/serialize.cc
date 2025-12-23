@@ -35,12 +35,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 				const char *curPtr = frame.ptr + i.offset;
 
 				switch (i.type.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -51,7 +51,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI16(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -62,7 +62,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI32(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -73,7 +73,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI64(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -84,7 +84,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU8(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -95,7 +95,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU16(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -106,7 +106,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU32(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -117,7 +117,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -131,7 +131,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -145,12 +145,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data = *(bool *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(data));
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -164,7 +164,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Class: {
+					case DataTypeKind::Class: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -178,7 +178,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -238,12 +238,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->write(i.name.data(), i.name.size()));
 
 				switch (i.type.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -254,7 +254,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI16(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -265,7 +265,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI32(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -276,7 +276,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI64(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -287,7 +287,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU8(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -298,7 +298,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU16(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -309,7 +309,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU32(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -320,7 +320,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -334,7 +334,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -348,12 +348,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data = *(bool *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(data));
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -367,7 +367,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Class: {
+					case DataTypeKind::Class: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -381,7 +381,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -430,12 +430,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 				const char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
 
 				switch (frame.elementType.kind) {
-					case FieldTypeKind::I8: {
+					case DataTypeKind::I8: {
 						int8_t data = *(int8_t *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
 						break;
 					}
-					case FieldTypeKind::I16: {
+					case DataTypeKind::I16: {
 						int16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -446,7 +446,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI16(data));
 						break;
 					}
-					case FieldTypeKind::I32: {
+					case DataTypeKind::I32: {
 						int32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -457,7 +457,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI32(data));
 						break;
 					}
-					case FieldTypeKind::I64: {
+					case DataTypeKind::I64: {
 						int64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -468,7 +468,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI64(data));
 						break;
 					}
-					case FieldTypeKind::U8: {
+					case DataTypeKind::U8: {
 						uint8_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -479,7 +479,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU8(data));
 						break;
 					}
-					case FieldTypeKind::U16: {
+					case DataTypeKind::U16: {
 						uint16_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -490,7 +490,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU16(data));
 						break;
 					}
-					case FieldTypeKind::U32: {
+					case DataTypeKind::U32: {
 						uint32_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -501,7 +501,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU32(data));
 						break;
 					}
-					case FieldTypeKind::U64: {
+					case DataTypeKind::U64: {
 						uint64_t data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -512,7 +512,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
 						break;
 					}
-					case FieldTypeKind::F32: {
+					case DataTypeKind::F32: {
 						float data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -526,7 +526,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
 						break;
 					}
-					case FieldTypeKind::F64: {
+					case DataTypeKind::F64: {
 						double data;
 
 						memcpy(&data, curPtr, sizeof(data));
@@ -540,12 +540,12 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
 						break;
 					}
-					case FieldTypeKind::Bool: {
+					case DataTypeKind::Bool: {
 						bool data = *(bool *)curPtr;
 						INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(data));
 						break;
 					}
-					case FieldTypeKind::Struct: {
+					case DataTypeKind::Struct: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -559,7 +559,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Class: {
+					case DataTypeKind::Class: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;
@@ -573,7 +573,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 						break;
 					}
-					case FieldTypeKind::Array: {
+					case DataTypeKind::Array: {
 						const char *data = curPtr;
 
 						SerializeFrame newFrame;

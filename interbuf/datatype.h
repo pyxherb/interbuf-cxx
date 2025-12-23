@@ -5,7 +5,7 @@
 #include <cstdint>
 
 namespace interbuf {
-	enum class FieldTypeKind : uint8_t {
+	enum class DataTypeKind : uint8_t {
 		I8 = 0,
 		I16,
 		I32,

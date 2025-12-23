@@ -184,7 +184,7 @@ int main() {
 
 		interbuf::StructField field;
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::I8 }, interbuf_offsetof(Test, i8) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::I8 }, interbuf_offsetof(Test, i8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -192,7 +192,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::I16 }, interbuf_offsetof(Test, i16) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::I16 }, interbuf_offsetof(Test, i16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -200,7 +200,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::I32 }, interbuf_offsetof(Test, i32) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::I32 }, interbuf_offsetof(Test, i32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -208,7 +208,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::I64 }, interbuf_offsetof(Test, i64) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::I64 }, interbuf_offsetof(Test, i64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -216,7 +216,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::U8 }, interbuf_offsetof(Test, u8) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::U8 }, interbuf_offsetof(Test, u8) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -224,7 +224,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::U16 }, interbuf_offsetof(Test, u16) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::U16 }, interbuf_offsetof(Test, u16) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -232,7 +232,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(Test, u32) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::U32 }, interbuf_offsetof(Test, u32) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -240,7 +240,7 @@ int main() {
 		}
 
 		{
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::U64 }, interbuf_offsetof(Test, u64) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::U64 }, interbuf_offsetof(Test, u64) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -254,7 +254,7 @@ int main() {
 				std::terminate();
 			}
 
-			arrayDataType->elementType = interbuf::DataType{ interbuf::FieldTypeKind::U8 };
+			arrayDataType->elementType = interbuf::DataType{ interbuf::DataTypeKind::U8 };
 
 			arrayDataType->serializer = [](const void *ptr,
 											const char *&ptrOut,
@@ -274,7 +274,7 @@ int main() {
 				return {};
 			};
 
-			field = { interbuf::DataType{ interbuf::FieldTypeKind::Array, arrayDataType.castTo<interbuf::Object>() }, interbuf_offsetof(Test, s) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::Array, arrayDataType.castTo<interbuf::Object>() }, interbuf_offsetof(Test, s) };
 
 			if (!structLayout->addField(std::move(field))) {
 				std::terminate();
@@ -343,14 +343,14 @@ int main() {
 
 		interbuf::ClassField field;
 		{
-			field = { "u32", interbuf::DataType{ interbuf::FieldTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
+			field = { "u32", interbuf::DataType{ interbuf::DataTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();
 			}
 		}
 		{
-			field = { "f32", interbuf::DataType{ interbuf::FieldTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
+			field = { "f32", interbuf::DataType{ interbuf::DataTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
 
 			if (!classLayout->addField(std::move(field))) {
 				std::terminate();

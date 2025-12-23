@@ -81,7 +81,7 @@ namespace interbuf {
 	class StructLayoutObject;
 
 	struct DataType {
-		FieldTypeKind kind;
+		DataTypeKind kind;
 		ObjectPtr<Object> typeDefObject;
 	};
 
