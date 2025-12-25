@@ -17,6 +17,191 @@ INTERBUF_API ArrayMemberDeserializeFrameExData::~ArrayMemberDeserializeFrameExDa
 INTERBUF_API DeserializeContext::~DeserializeContext() {
 }
 
+INTERBUF_FORCEINLINE ExceptionPointer _doDeserializeByFrameType(DeserializeContext *context, DataType i, char *curPtr) {
+	auto &frame = context->frames.back();
+
+	switch (i.kind) {
+		case DataTypeKind::I8: {
+			int8_t data;
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
+			*((int8_t *)curPtr) = data;
+			break;
+		}
+		case DataTypeKind::I16: {
+			int16_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::I32: {
+			int32_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::I64: {
+			int64_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::U8: {
+			uint8_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::U16: {
+			uint16_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::U32: {
+			uint32_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::U64: {
+			uint64_t data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
+
+			if (peff::getByteOrder())
+				data = peff::swapByteOrder(data);
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::F32: {
+			float data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
+
+			if (peff::getByteOrder()) {
+				uint32_t d;
+				d = peff::swapByteOrder(*(uint32_t *)&data);
+				data = *(float *)&data;
+			}
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::F64: {
+			double data;
+
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
+
+			if (peff::getByteOrder()) {
+				uint64_t d;
+				d = peff::swapByteOrder(*(uint64_t *)&data);
+				data = *(float *)&data;
+			}
+
+			memcpy(curPtr, &data, sizeof(data));
+			break;
+		}
+		case DataTypeKind::Bool: {
+			bool data;
+			INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
+			*((bool *)curPtr) = data;
+			break;
+		}
+		case DataTypeKind::Struct: {
+			{
+				bool isNotNull;
+				INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(isNotNull));
+				if (isNotNull) {
+					(*(ObjectPtr<StructBase> *)curPtr) = {};
+					break;
+				}
+			}
+			auto sl = i.typeDefObject.castTo<StructLayoutObject>();
+			ObjectPtr<StructBase> sb = sl->constructor(context->allocator.get());
+
+			if (!sb)
+				return OutOfMemoryError::alloc();
+
+			(*(ObjectPtr<StructBase> *)curPtr) = sb;
+
+			char *data = (char *)sb.get();
+
+			DeserializeFrame newFrame;
+
+			newFrame.frameType = DeserializeFrameType::StructMember;
+			newFrame.exData = StructMemberDeserializeFrameExData(sl);
+			newFrame.ptr = data;
+
+			if (!context->frames.pushBack(std::move(newFrame)))
+				return OutOfMemoryError::alloc();
+
+			break;
+		}
+		case DataTypeKind::Array: {
+			const char *data = curPtr;
+
+			DeserializeFrame newFrame;
+
+			ArrayMemberDeserializeFrameExData exData(i);
+
+			newFrame.frameType = DeserializeFrameType::ArrayMember;
+
+			size_t elementSize;
+
+			uint64_t len;
+			{
+				INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
+				if (peff::getByteOrder())
+					len = peff::swapByteOrder(len);
+			}
+
+			INTERBUF_RETURN_IF_EXCEPT(i.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
+
+			newFrame.exData = std::move(exData);
+
+			if (!context->frames.pushBack(std::move(newFrame)))
+				return OutOfMemoryError::alloc();
+
+			break;
+		}
+		default:
+			std::terminate();
+	}
+
+	return {};
+}
+
 INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *context) {
 	while (context->frames.size()) {
 		DeserializeFrame &frame = context->frames.back();
@@ -27,183 +212,15 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				if (exData.idxMember >= exData.layout->getFields().size()) {
 					context->frames.popBack();
-					break;
+					return {};
 				}
 
 				auto &i = exData.layout->getFields().at(exData.idxMember);
-
-				char *curPtr = frame.ptr + i.offset;
-
-				switch (i.type.kind) {
-					case DataTypeKind::I8: {
-						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
-						*((int8_t *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::I16: {
-						int16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I32: {
-						int32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I64: {
-						int64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U8: {
-						uint8_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U16: {
-						uint16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U32: {
-						uint32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U64: {
-						uint64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F32: {
-						float data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
-
-						if (peff::getByteOrder()) {
-							uint32_t d;
-							d = peff::swapByteOrder(*(uint32_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F64: {
-						double data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
-
-						if (peff::getByteOrder()) {
-							uint64_t d;
-							d = peff::swapByteOrder(*(uint64_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::Bool: {
-						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
-						*((bool *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::Struct: {
-						auto sl = i.type.typeDefObject.castTo<StructLayoutObject>();
-						ObjectPtr<StructBase> sb = sl->constructor(context->allocator.get());
-
-						if (!sb)
-							return OutOfMemoryError::alloc();
-
-						(*(ObjectPtr<StructBase> *)curPtr) = sb;
-
-						char *data = (char *)sb.get();
-
-						DeserializeFrame newFrame;
-
-						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(sl);
-						newFrame.ptr = data;
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					case DataTypeKind::Array: {
-						const char *data = curPtr;
-
-						DeserializeFrame newFrame;
-
-						ArrayMemberDeserializeFrameExData exData(i.type);
-
-						newFrame.frameType = DeserializeFrameType::ArrayMember;
-
-						size_t elementSize;
-
-						uint64_t len;
-						{
-							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
-							if (peff::getByteOrder())
-								len = peff::swapByteOrder(len);
-						}
-
-						INTERBUF_RETURN_IF_EXCEPT(i.type.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
-
-						newFrame.exData = std::move(exData);
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					default:
-						std::terminate();
-				}
+				char *ptr = frame.ptr + exData.layout->getFields().at(exData.idxMember).offset;
+				INTERBUF_RETURN_IF_EXCEPT(_doDeserializeByFrameType(
+					context,
+					i.type,
+					ptr));
 
 				++exData.idxMember;
 
@@ -240,168 +257,10 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				char *curPtr = frame.ptr + i.offset;
 
-				switch (i.type.kind) {
-					case DataTypeKind::I8: {
-						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
-						*((int8_t *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::I16: {
-						int16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I32: {
-						int32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I64: {
-						int64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U8: {
-						uint8_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U16: {
-						uint16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U32: {
-						uint32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U64: {
-						uint64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F32: {
-						float data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
-
-						if (peff::getByteOrder()) {
-							uint32_t d;
-							d = peff::swapByteOrder(*(uint32_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F64: {
-						double data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
-
-						if (peff::getByteOrder()) {
-							uint64_t d;
-							d = peff::swapByteOrder(*(uint64_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::Bool: {
-						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
-						*((bool *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::Struct: {
-						char *data = curPtr;
-
-						DeserializeFrame newFrame;
-
-						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(i.type.typeDefObject.castTo<StructLayoutObject>());
-						newFrame.ptr = data;
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					case DataTypeKind::Array: {
-						const char *data = curPtr;
-
-						DeserializeFrame newFrame;
-
-						ArrayMemberDeserializeFrameExData exData(i.type);
-
-						newFrame.frameType = DeserializeFrameType::ArrayMember;
-
-						size_t elementSize;
-
-						uint64_t len;
-						{
-							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
-							if (peff::getByteOrder())
-								len = peff::swapByteOrder(len);
-						}
-
-						INTERBUF_RETURN_IF_EXCEPT(i.type.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
-
-						newFrame.exData = std::move(exData);
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					default:
-						std::terminate();
-				}
+				INTERBUF_RETURN_IF_EXCEPT(_doDeserializeByFrameType(
+					context,
+					i.type,
+					curPtr));
 
 				++exData.idxMember;
 
@@ -417,168 +276,10 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 
 				char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
 
-				switch (frame.elementType.kind) {
-					case DataTypeKind::I8: {
-						int8_t data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI8(data));
-						*((int8_t *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::I16: {
-						int16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I32: {
-						int32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::I64: {
-						int64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readI64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U8: {
-						uint8_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU8(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U16: {
-						uint16_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU16(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U32: {
-						uint32_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU32(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::U64: {
-						uint64_t data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(data));
-
-						if (peff::getByteOrder())
-							data = peff::swapByteOrder(data);
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F32: {
-						float data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF32(data));
-
-						if (peff::getByteOrder()) {
-							uint32_t d;
-							d = peff::swapByteOrder(*(uint32_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::F64: {
-						double data;
-
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readF64(data));
-
-						if (peff::getByteOrder()) {
-							uint64_t d;
-							d = peff::swapByteOrder(*(uint64_t *)&data);
-							data = *(float *)&data;
-						}
-
-						memcpy(curPtr, &data, sizeof(data));
-						break;
-					}
-					case DataTypeKind::Bool: {
-						bool data;
-						INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readBool(data));
-						*((bool *)curPtr) = data;
-						break;
-					}
-					case DataTypeKind::Struct: {
-						char *data = curPtr;
-
-						DeserializeFrame newFrame;
-
-						newFrame.frameType = DeserializeFrameType::StructMember;
-						newFrame.exData = StructMemberDeserializeFrameExData(frame.elementType.typeDefObject.castTo<StructLayoutObject>());
-						newFrame.ptr = data;
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					case DataTypeKind::Array: {
-						const char *data = curPtr;
-
-						DeserializeFrame newFrame;
-
-						ArrayMemberDeserializeFrameExData exData(frame.elementType);
-
-						newFrame.frameType = DeserializeFrameType::ArrayMember;
-
-						size_t elementSize;
-
-						uint64_t len;
-						{
-							if (peff::getByteOrder())
-								len = peff::swapByteOrder(len);
-							INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(context->allocator.get(), context->reader->readU64(len));
-						}
-
-						INTERBUF_RETURN_IF_EXCEPT(frame.elementType.typeDefObject.castTo<ArrayDataTypeDefObject>()->deserializer(len, curPtr, newFrame.ptr, elementSize));
-
-						newFrame.exData = std::move(exData);
-
-						if (!context->frames.pushBack(std::move(newFrame)))
-							return OutOfMemoryError::alloc();
-
-						break;
-					}
-					default:
-						std::terminate();
-				}
+				INTERBUF_RETURN_IF_EXCEPT(_doDeserializeByFrameType(
+					context,
+					frame.elementType,
+					curPtr));
 
 				++exData.idxMember;
 
