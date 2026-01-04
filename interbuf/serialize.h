@@ -9,18 +9,18 @@ namespace interbuf {
 	public:
 		INTERBUF_API virtual ~Writer();
 
-		virtual bool write(const char *src, size_t size) = 0;
-		virtual bool writeI8(int8_t data) = 0;
-		virtual bool writeI16(int16_t data) noexcept = 0;
-		virtual bool writeI32(int32_t data) noexcept = 0;
-		virtual bool writeI64(int64_t data) noexcept = 0;
-		virtual bool writeU8(uint8_t data) noexcept = 0;
-		virtual bool writeU16(uint16_t data) noexcept = 0;
-		virtual bool writeU32(uint32_t data) noexcept = 0;
-		virtual bool writeU64(uint64_t data) noexcept = 0;
-		virtual bool writeF32(float data) noexcept = 0;
-		virtual bool writeF64(double data) noexcept = 0;
-		virtual bool writeBool(bool data) noexcept = 0;
+		virtual ExceptionPointer write(const char *src, size_t size) = 0;
+		virtual ExceptionPointer writeI8(int8_t data) = 0;
+		virtual ExceptionPointer writeI16(int16_t data) noexcept = 0;
+		virtual ExceptionPointer writeI32(int32_t data) noexcept = 0;
+		virtual ExceptionPointer writeI64(int64_t data) noexcept = 0;
+		virtual ExceptionPointer writeU8(uint8_t data) noexcept = 0;
+		virtual ExceptionPointer writeU16(uint16_t data) noexcept = 0;
+		virtual ExceptionPointer writeU32(uint32_t data) noexcept = 0;
+		virtual ExceptionPointer writeU64(uint64_t data) noexcept = 0;
+		virtual ExceptionPointer writeF32(float data) noexcept = 0;
+		virtual ExceptionPointer writeF64(double data) noexcept = 0;
+		virtual ExceptionPointer writeBool(bool data) noexcept = 0;
 	};
 
 	struct StructMemberSerializeFrameExData {
@@ -80,11 +80,5 @@ namespace interbuf {
 	INTERBUF_API ExceptionPointer serializeStruct(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout);
 	INTERBUF_API ExceptionPointer serializeClass(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<ClassLayoutObject> rootLayout);
 }
-
-#define INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(allocator, e)         \
-	if (!(e))                                                        \
-		return withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator)); \
-	else                                                             \
-		;
 
 #endif

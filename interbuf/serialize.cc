@@ -21,7 +21,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 	switch (type.kind) {
 		case DataTypeKind::I8: {
 			int8_t data = *(int8_t *)curPtr;
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI8(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI8(data));
 			break;
 		}
 		case DataTypeKind::I16: {
@@ -32,7 +32,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI16(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI16(data));
 			break;
 		}
 		case DataTypeKind::I32: {
@@ -43,7 +43,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI32(data));
 			break;
 		}
 		case DataTypeKind::I64: {
@@ -54,7 +54,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeI64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI64(data));
 			break;
 		}
 		case DataTypeKind::U8: {
@@ -65,7 +65,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU8(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU8(data));
 			break;
 		}
 		case DataTypeKind::U16: {
@@ -76,7 +76,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU16(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU16(data));
 			break;
 		}
 		case DataTypeKind::U32: {
@@ -87,7 +87,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU32(data));
 			break;
 		}
 		case DataTypeKind::U64: {
@@ -98,7 +98,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			if (peff::getByteOrder())
 				data = peff::swapByteOrder(data);
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(data));
 			break;
 		}
 		case DataTypeKind::F32: {
@@ -112,7 +112,7 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 				data = *(float *)&data;
 			}
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeF32(data));
 			break;
 		}
 		case DataTypeKind::F64: {
@@ -126,12 +126,12 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 				data = *(double *)&data;
 			}
 
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeF64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeF64(data));
 			break;
 		}
 		case DataTypeKind::Bool: {
 			bool data = *(bool *)curPtr;
-			INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(data));
 			break;
 		}
 		case DataTypeKind::Struct: {
@@ -140,9 +140,9 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			StructBase *p = ((const ObjectPtr<StructBase> *)data)->get();
 
 			if (p) {
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(false));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(false));
 			} else {
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(true));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(true));
 
 				SerializeFrame newFrame;
 
@@ -162,9 +162,9 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 			ClassBase *p = ((const ObjectPtr<ClassBase> *)data)->get();
 
 			if (p) {
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(false));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(false));
 			} else {
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeBool(true));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(true));
 				SerializeFrame newFrame;
 
 				newFrame.frameType = SerializeFrameType::ClassMember;
@@ -254,9 +254,9 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 					if (peff::getByteOrder())
 						data = peff::swapByteOrder(data);
 
-					INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(data));
+					INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(data));
 				}
-				INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->write(i.name.data(), i.name.size()));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->write(i.name.data(), i.name.size()));
 
 				INTERBUF_RETURN_IF_EXCEPT(_doSerializeByFrameType(context, i.type, curPtr));
 
@@ -271,7 +271,7 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 					uint64_t len = exData.length;
 					if (peff::getByteOrder())
 						len = peff::swapByteOrder(len);
-					INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(context->allocator.get(), context->writer->writeU64(len));
+					INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(len));
 				}
 				if (exData.idxMember >= exData.length) {
 					context->frames.popBack();
@@ -313,11 +313,10 @@ INTERBUF_API ExceptionPointer interbuf::serializeClass(peff::Alloc *allocator, c
 	if (rootLayout->getFields().size() >= SIZE_MAX)
 		std::terminate();
 
-	INTERBUF_RETURN_EXCEPT_IF_WRITE_FAILED(
-		context.allocator.get(), context.writer->writeU64(
-									 peff::getByteOrder()
-										 ? peff::swapByteOrder((uint64_t)rootLayout->getFields().size())
-										 : (uint64_t)rootLayout->getFields().size()));
+	INTERBUF_RETURN_IF_EXCEPT(context.writer->writeU64(
+		peff::getByteOrder()
+			? peff::swapByteOrder((uint64_t)rootLayout->getFields().size())
+			: (uint64_t)rootLayout->getFields().size()));
 
 	SerializeFrame newFrame;
 

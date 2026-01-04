@@ -9,72 +9,73 @@ private:
 	FILE *_fp;
 
 public:
-	MyWriter(FILE *fp) : _fp(fp) {
+	peff::RcObjectPtr<peff::Alloc> allocator;
+	MyWriter(peff::Alloc *allocator, FILE *fp) : allocator(allocator), _fp(fp) {
 	}
 	virtual ~MyWriter() {
 		if (_fp)
 			fclose(_fp);
 	}
 
-	virtual bool write(const char *src, size_t size) override {
+	virtual interbuf::ExceptionPointer write(const char *src, size_t size) override {
 		if (!(fwrite(src, size, 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeI8(int8_t data) override {
+	virtual interbuf::ExceptionPointer writeI8(int8_t data) override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeI16(int16_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeI16(int16_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeI32(int32_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeI32(int32_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeI64(int64_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeI64(int64_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeU8(uint8_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeU8(uint8_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeU16(uint16_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeU16(uint16_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeU32(uint32_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeU32(uint32_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeU64(uint64_t data) noexcept override {
+	virtual interbuf::ExceptionPointer writeU64(uint64_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeF32(float data) noexcept override {
+	virtual interbuf::ExceptionPointer writeF32(float data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeF64(double data) noexcept override {
+	virtual interbuf::ExceptionPointer writeF64(double data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool writeBool(bool data) noexcept override {
+	virtual interbuf::ExceptionPointer writeBool(bool data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
 };
 
@@ -83,72 +84,73 @@ private:
 	FILE *_fp;
 
 public:
-	MyReader(FILE *fp) : _fp(fp) {
+	peff::RcObjectPtr<peff::Alloc> allocator;
+	MyReader(peff::Alloc *allocator, FILE *fp) : allocator(allocator), _fp(fp) {
 	}
 	virtual ~MyReader() {
 		if (_fp)
 			fclose(_fp);
 	}
 
-	virtual bool read(char *buffer, size_t size) noexcept override {
+	virtual interbuf::ExceptionPointer read(char *buffer, size_t size) noexcept override {
 		if (!(fread(buffer, size, 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readI8(int8_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readI8(int8_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readI16(int16_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readI16(int16_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readI32(int32_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readI32(int32_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readI64(int64_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readI64(int64_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readU8(uint8_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readU8(uint8_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readU16(uint16_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readU16(uint16_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readU32(uint32_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readU32(uint32_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readU64(uint64_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer readU64(uint64_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readF32(float &data) noexcept override {
+	virtual interbuf::ExceptionPointer readF32(float &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readF64(double &data) noexcept override {
+	virtual interbuf::ExceptionPointer readF64(double &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
-	virtual bool readBool(bool &data) noexcept override {
+	virtual interbuf::ExceptionPointer readBool(bool &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return false;
-		return true;
+			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+		return {};
 	}
 };
 
@@ -301,7 +303,7 @@ int main() {
 		memset(test.s, 0xa1, sizeof(test.s));
 
 		{
-			MyWriter writer(fp);
+			MyWriter writer(peff::getDefaultAlloc(), fp);
 
 			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, &writer, structLayout);
 		}
@@ -316,7 +318,7 @@ int main() {
 		Test test2;
 
 		{
-			MyReader reader(fp2);
+			MyReader reader(peff::getDefaultAlloc(), fp2);
 
 			interbuf::deserializeStruct(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, structLayout);
 		}
@@ -370,7 +372,7 @@ int main() {
 		test.f32 = 0.34f;
 
 		{
-			MyWriter writer(fp);
+			MyWriter writer(peff::getDefaultAlloc(), fp);
 
 			interbuf::serializeClass(peff::getDefaultAlloc(), &test, &writer, classLayout);
 		}
@@ -385,7 +387,7 @@ int main() {
 		ClassTest test2;
 
 		{
-			MyReader reader(fp2);
+			MyReader reader(peff::getDefaultAlloc(), fp2);
 
 			interbuf::deserializeClass(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, classLayout);
 		}

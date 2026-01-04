@@ -2,7 +2,7 @@
 
 using namespace interbuf;
 
-OutOfMemoryError interbuf::g_outOfMemoryError;
+static OutOfMemoryError _g_outOfMemoryError;
 
 INTERBUF_API OutOfMemoryError::OutOfMemoryError() : Exception(ExceptionKind::OutOfMemory) {}
 INTERBUF_API OutOfMemoryError::~OutOfMemoryError() {}
@@ -11,7 +11,7 @@ INTERBUF_API void OutOfMemoryError::dealloc() {
 }
 
 INTERBUF_API OutOfMemoryError *OutOfMemoryError::alloc() {
-	return &g_outOfMemoryError;
+	return &_g_outOfMemoryError;
 }
 
 INTERBUF_API IOError::IOError(peff::Alloc *allocator)

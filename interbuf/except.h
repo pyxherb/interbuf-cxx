@@ -16,8 +16,6 @@ namespace interbuf {
 		INTERBUF_API static OutOfMemoryError *alloc();
 	};
 
-	extern OutOfMemoryError g_outOfMemoryError;
-
 	class IOError : public Exception {
 	public:
 		peff::RcObjectPtr<peff::Alloc> allocator;

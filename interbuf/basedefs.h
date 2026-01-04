@@ -3,17 +3,12 @@
 
 #include <peff/base/basedefs.h>
 
-#if !INTERBUF_STATIC_LINK
-	#if defined(_MSC_VER)
-		#define INTERBUF_DLLEXPORT __declspec(dllexport)
-		#define INTERBUF_DLLIMPORT __declspec(dllimport)
-	#elif defined(__GNUC__) || defined(__clang__)
-		#define INTERBUF_DLLEXPORT __attribute__((__visibility__("default")))
-		#define INTERBUF_DLLIMPORT __attribute__((__visibility__("default")))
-	#endif
-#else
-	#define INTERBUF_DLLEXPORT
-	#define INTERBUF_DLLIMPORT
+#if defined(_MSC_VER)
+	#define INTERBUF_DLLEXPORT __declspec(dllexport)
+	#define INTERBUF_DLLIMPORT __declspec(dllimport)
+#elif defined(__GNUC__) || defined(__clang__)
+	#define INTERBUF_DLLEXPORT __attribute__((__visibility__("default")))
+	#define INTERBUF_DLLIMPORT __attribute__((__visibility__("default")))
 #endif
 
 #define INTERBUF_FORCEINLINE PEFF_FORCEINLINE
@@ -29,10 +24,14 @@
 	#define INTERBUF_DEF_EXPLICIT_INSTANTIATED_CLASS(apiModifier, name, ...)
 #endif
 
-#if IS_INTERBUF_BASE_BUILDING
-	#define INTERBUF_API INTERBUF_DLLEXPORT
+#if !INTERBUF_STATIC_LINK
+	#if IS_INTERBUF_BASE_BUILDING
+		#define INTERBUF_API INTERBUF_DLLEXPORT
+	#else
+		#define INTERBUF_API INTERBUF_DLLIMPORT
+	#endif
 #else
-	#define INTERBUF_API INTERBUF_DLLIMPORT
+	#define INTERBUF_API
 #endif
 
 #endif

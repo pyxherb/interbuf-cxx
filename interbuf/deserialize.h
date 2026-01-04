@@ -9,19 +9,19 @@ namespace interbuf {
 	public:
 		INTERBUF_API virtual ~Reader();
 
-		[[nodiscard]] virtual bool read(char *buffer, size_t size) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer read(char *buffer, size_t size) noexcept = 0;
 
-		[[nodiscard]] virtual bool readI8(int8_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI16(int16_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI32(int32_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readI64(int64_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU8(uint8_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU16(uint16_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU32(uint32_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readU64(uint64_t &data) noexcept = 0;
-		[[nodiscard]] virtual bool readBool(bool &data) noexcept = 0;
-		[[nodiscard]] virtual bool readF32(float &data) noexcept = 0;
-		[[nodiscard]] virtual bool readF64(double &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readI8(int8_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readI16(int16_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readI32(int32_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readI64(int64_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readU8(uint8_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readU16(uint16_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readU32(uint32_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readU64(uint64_t &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readBool(bool &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readF32(float &data) noexcept = 0;
+		[[nodiscard]] virtual ExceptionPointer readF64(double &data) noexcept = 0;
 	};
 
 	struct StructMemberDeserializeFrameExData {
@@ -82,11 +82,5 @@ namespace interbuf {
 	INTERBUF_API ExceptionPointer deserializeStruct(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout);
 	INTERBUF_API ExceptionPointer deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout);
 }
-
-#define INTERBUF_RETURN_EXCEPT_IF_READ_FAILED(allocator, e)         \
-	if (!(e))                                                        \
-		return withOOMErrorIfAllocFailed(IOError::alloc(allocator)); \
-	else                                                             \
-		;
 
 #endif
