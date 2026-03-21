@@ -65,22 +65,25 @@ namespace interbuf {
 	};
 
 	struct DeserializeContext {
+		peff::HashSet<peff::String> &stringPoolOut;
 		peff::RcObjectPtr<peff::Alloc> allocator;
 		peff::List<DeserializeFrame> frames;
 		Reader *reader;
 
 		INTERBUF_FORCEINLINE DeserializeContext(
+			peff::HashSet<peff::String> &stringPoolOut,
 			peff::Alloc *allocator,
 			Reader *reader)
-			: allocator(allocator),
+			: stringPoolOut(stringPoolOut),
+			  allocator(allocator),
 			  frames(allocator),
 			  reader(reader) {}
 		INTERBUF_API ~DeserializeContext();
 	};
 
 	INTERBUF_API ExceptionPointer _doDeserialize(DeserializeContext *context);
-	INTERBUF_API ExceptionPointer deserializeStruct(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout);
-	INTERBUF_API ExceptionPointer deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout);
+	INTERBUF_API ExceptionPointer deserializeStruct(peff::HashSet<peff::String> &stringPoolOut, peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout);
+	INTERBUF_API ExceptionPointer deserializeClass(peff::HashSet<peff::String> &stringPoolOut, peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout);
 }
 
 #endif

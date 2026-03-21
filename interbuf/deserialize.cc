@@ -291,8 +291,8 @@ INTERBUF_API ExceptionPointer interbuf::_doDeserialize(DeserializeContext *conte
 	return {};
 }
 
-INTERBUF_API ExceptionPointer interbuf::deserializeStruct(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout) {
-	DeserializeContext context(allocator, reader);
+INTERBUF_API ExceptionPointer interbuf::deserializeStruct(peff::HashSet<peff::String> &stringPoolOut, peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<StructLayoutObject> rootLayout) {
+	DeserializeContext context(stringPoolOut, allocator, reader);
 
 	DeserializeFrame newFrame;
 
@@ -306,8 +306,8 @@ INTERBUF_API ExceptionPointer interbuf::deserializeStruct(peff::Alloc *allocator
 	return _doDeserialize(&context);
 }
 
-INTERBUF_API ExceptionPointer interbuf::deserializeClass(peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout) {
-	DeserializeContext context(allocator, reader);
+INTERBUF_API ExceptionPointer interbuf::deserializeClass(peff::HashSet<peff::String> &stringPoolOut, peff::Alloc *allocator, void *ptr, size_t size, Reader *reader, ObjectPtr<ClassLayoutObject> rootLayout) {
+	DeserializeContext context(stringPoolOut, allocator, reader);
 
 	uint64_t nMembers;
 	{

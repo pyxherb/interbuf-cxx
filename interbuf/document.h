@@ -11,7 +11,7 @@
 #include <peff/advutils/shared_ptr.h>
 #include <variant>
 
-#define interbuf_offsetof(t, m) ((size_t)(&reinterpret_cast<const volatile char &>(static_cast<const t *>(nullptr)->m)))
+#define interbuf_offsetof(p, m) ((size_t)(((char*)&((p)->m)) - ((char *)p)))
 
 namespace interbuf {
 	class Document;
