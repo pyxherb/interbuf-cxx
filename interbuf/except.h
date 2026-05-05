@@ -52,11 +52,11 @@ namespace interbuf {
 		INTERBUF_API static IllegalObjectLayoutError *alloc(peff::Alloc *allocator) noexcept;
 	};
 
-	INTERBUF_FORCEINLINE ExceptionPointer withOOMErrorIfAllocFailed(Exception *exceptionPtr) noexcept {
-		if (!exceptionPtr) {
+	INTERBUF_FORCEINLINE ExceptionPointer with_oom_error_if_alloc_failed(Exception *exception_ptr) noexcept {
+		if (!exception_ptr) {
 			return OutOfMemoryError::alloc();
 		}
-		return exceptionPtr;
+		return exception_ptr;
 	}
 }
 

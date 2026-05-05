@@ -4,9 +4,9 @@
 #include "except.h"
 
 namespace interbuf {
-	void encodeVarInt64(uint64_t data, uint8_t buffer[10], size_t &szBufferOut);
-	typedef bool (*VarInt64DecodeReader)(void *userData, uint8_t &dataOut);
-	bool decodeVarInt64(VarInt64DecodeReader decoderReader, void *userData, uint64_t &dataOut, size_t &szReadBufferOut);
+	void encode_var_int64(uint64_t data, uint8_t buffer[10], size_t &sz_buffer_out);
+	typedef bool (*VarInt64DecodeReader)(void *user_data, uint8_t &data_out);
+	bool decode_var_int64(VarInt64DecodeReader decoder_reader, void *user_data, uint64_t &data_out, size_t &sz_read_buffer_out);
 }
 
 #endif

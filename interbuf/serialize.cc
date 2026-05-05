@@ -17,186 +17,186 @@ INTERBUF_API ArrayMemberSerializeFrameExData::~ArrayMemberSerializeFrameExData()
 INTERBUF_API SerializeContext::~SerializeContext() {
 }
 
-INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *context, DataType type, const char *curPtr) {
+INTERBUF_FORCEINLINE ExceptionPointer _do_serialize_by_frame_type(SerializeContext *context, DataType type, const char *cur_ptr) {
 	switch (type.kind) {
 		case DataTypeKind::I8: {
-			int8_t data = *(int8_t *)curPtr;
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI8(data));
+			int8_t data = *(int8_t *)cur_ptr;
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_i8(data));
 			break;
 		}
 		case DataTypeKind::I16: {
 			int16_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI16(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_i16(data));
 			break;
 		}
 		case DataTypeKind::I32: {
 			int32_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_i32(data));
 			break;
 		}
 		case DataTypeKind::I64: {
 			int64_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeI64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_i64(data));
 			break;
 		}
 		case DataTypeKind::U8: {
 			uint8_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU8(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u8(data));
 			break;
 		}
 		case DataTypeKind::U16: {
 			uint16_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU16(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u16(data));
 			break;
 		}
 		case DataTypeKind::U32: {
 			uint32_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u32(data));
 			break;
 		}
 		case DataTypeKind::U64: {
 			uint64_t data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder())
-				data = peff::swapByteOrder(data);
+			if (peff::get_byte_order())
+				data = peff::swap_byte_order(data);
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u64(data));
 			break;
 		}
 		case DataTypeKind::F32: {
 			float data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder()) {
+			if (peff::get_byte_order()) {
 				uint32_t d;
-				d = peff::swapByteOrder(*(uint32_t *)&data);
+				d = peff::swap_byte_order(*(uint32_t *)&data);
 				data = *(float *)&data;
 			}
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeF32(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_f32(data));
 			break;
 		}
 		case DataTypeKind::F64: {
 			double data;
 
-			memcpy(&data, curPtr, sizeof(data));
+			memcpy(&data, cur_ptr, sizeof(data));
 
-			if (peff::getByteOrder()) {
+			if (peff::get_byte_order()) {
 				uint64_t d;
-				d = peff::swapByteOrder(*(uint64_t *)&data);
+				d = peff::swap_byte_order(*(uint64_t *)&data);
 				data = *(double *)&data;
 			}
 
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeF64(data));
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_f64(data));
 			break;
 		}
 		case DataTypeKind::Bool: {
-			bool data = *(bool *)curPtr;
-			INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(data));
+			bool data = *(bool *)cur_ptr;
+			INTERBUF_RETURN_IF_EXCEPT(context->writer->write_bool(data));
 			break;
 		}
 		case DataTypeKind::Struct: {
-			const char *data = curPtr;
+			const char *data = cur_ptr;
 
 			StructBase *p = ((const ObjectPtr<StructBase> *)data)->get();
 
 			if (p) {
-				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(false));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->write_bool(false));
 			} else {
-				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(true));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->write_bool(true));
 
-				SerializeFrame newFrame;
+				SerializeFrame new_frame;
 
-				newFrame.frameType = SerializeFrameType::StructMember;
-				newFrame.exData = StructMemberSerializeFrameExData(type.typeDefObject.castTo<StructLayoutObject>());
-				newFrame.ptr = (const char *)p;
+				new_frame.frame_type = SerializeFrameType::StructMember;
+				new_frame.ex_data = StructMemberSerializeFrameExData(type.type_def_object.cast_to<StructLayoutObject>());
+				new_frame.ptr = (const char *)p;
 
-				if (!context->frames.pushBack(std::move(newFrame)))
+				if (!context->frames.push_back(std::move(new_frame)))
 					return OutOfMemoryError::alloc();
 			}
 
 			break;
 		}
 		case DataTypeKind::Class: {
-			const char *data = curPtr;
+			const char *data = cur_ptr;
 
 			ClassBase *p = ((const ObjectPtr<ClassBase> *)data)->get();
 
 			if (p) {
-				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(false));
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->write_bool(false));
 			} else {
-				INTERBUF_RETURN_IF_EXCEPT(context->writer->writeBool(true));
-				SerializeFrame newFrame;
+				INTERBUF_RETURN_IF_EXCEPT(context->writer->write_bool(true));
+				SerializeFrame new_frame;
 
-				newFrame.frameType = SerializeFrameType::ClassMember;
-				newFrame.exData = ClassMemberSerializeFrameExData(type.typeDefObject.castTo<ClassLayoutObject>());
-				newFrame.ptr = (const char *)p;
+				new_frame.frame_type = SerializeFrameType::ClassMember;
+				new_frame.ex_data = ClassMemberSerializeFrameExData(type.type_def_object.cast_to<ClassLayoutObject>());
+				new_frame.ptr = (const char *)p;
 
-				if (!context->frames.pushBack(std::move(newFrame)))
+				if (!context->frames.push_back(std::move(new_frame)))
 					return OutOfMemoryError::alloc();
 			}
 
 			break;
 		}
 		case DataTypeKind::Array: {
-			const char *data = curPtr;
+			const char *data = cur_ptr;
 
-			SerializeFrame newFrame;
+			SerializeFrame new_frame;
 
-			auto td = type.typeDefObject.castTo<ArrayDataTypeDefObject>();
+			auto td = type.type_def_object.cast_to<ArrayDataTypeDefObject>();
 
-			ArrayMemberSerializeFrameExData exData(td);
+			ArrayMemberSerializeFrameExData ex_data(td);
 
-			newFrame.frameType = SerializeFrameType::ArrayMember;
+			new_frame.frame_type = SerializeFrameType::ArrayMember;
 
-			size_t elementSize;
+			size_t element_size;
 
-			td->serializer(curPtr, newFrame.ptr, elementSize, exData.length);
+			td->serializer(cur_ptr, new_frame.ptr, element_size, ex_data.length);
 
-			newFrame.szPerElement = elementSize;
-			newFrame.exData = std::move(exData);
-			newFrame.elementType = td->elementType;
+			new_frame.sz_per_element = element_size;
+			new_frame.ex_data = std::move(ex_data);
+			new_frame.element_type = td->element_type;
 
-			if (!context->frames.pushBack(std::move(newFrame)))
+			if (!context->frames.push_back(std::move(new_frame)))
 				return OutOfMemoryError::alloc();
 
 			break;
@@ -208,40 +208,40 @@ INTERBUF_FORCEINLINE ExceptionPointer _doSerializeByFrameType(SerializeContext *
 	return {};
 }
 
-INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) {
+INTERBUF_API ExceptionPointer interbuf::_do_serialize(SerializeContext *context) {
 	while (context->frames.size()) {
 		SerializeFrame &frame = context->frames.back();
 
-		switch (frame.frameType) {
+		switch (frame.frame_type) {
 			case SerializeFrameType::StructMember: {
-				StructMemberSerializeFrameExData &exData = std::get<StructMemberSerializeFrameExData>(frame.exData);
+				StructMemberSerializeFrameExData &ex_data = std::get<StructMemberSerializeFrameExData>(frame.ex_data);
 
-				if (exData.idxMember >= exData.layout->getFields().size()) {
-					context->frames.popBack();
+				if (ex_data.idx_member >= ex_data.layout->get_fields().size()) {
+					context->frames.pop_back();
 					break;
 				}
 
-				auto &i = exData.layout->getFields().at(exData.idxMember);
+				auto &i = ex_data.layout->get_fields().at(ex_data.idx_member);
 
-				const char *curPtr = frame.ptr + i.offset;
+				const char *cur_ptr = frame.ptr + i.offset;
 
-				INTERBUF_RETURN_IF_EXCEPT(_doSerializeByFrameType(context, i.type, curPtr));
+				INTERBUF_RETURN_IF_EXCEPT(_do_serialize_by_frame_type(context, i.type, cur_ptr));
 
-				++exData.idxMember;
+				++ex_data.idx_member;
 
 				break;
 			}
 			case SerializeFrameType::ClassMember: {
-				ClassMemberSerializeFrameExData &exData = std::get<ClassMemberSerializeFrameExData>(frame.exData);
+				ClassMemberSerializeFrameExData &ex_data = std::get<ClassMemberSerializeFrameExData>(frame.ex_data);
 
-				if (exData.idxMember >= exData.layout->getFields().size()) {
-					context->frames.popBack();
+				if (ex_data.idx_member >= ex_data.layout->get_fields().size()) {
+					context->frames.pop_back();
 					break;
 				}
 
-				auto &i = exData.layout->getFields().at(exData.idxMember);
+				auto &i = ex_data.layout->get_fields().at(ex_data.idx_member);
 
-				const char *curPtr = frame.ptr + i.offset;
+				const char *cur_ptr = frame.ptr + i.offset;
 
 				{
 					uint64_t data;
@@ -251,38 +251,38 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 
 					data = (uint64_t)i.name.size();
 
-					if (peff::getByteOrder())
-						data = peff::swapByteOrder(data);
+					if (peff::get_byte_order())
+						data = peff::swap_byte_order(data);
 
-					INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(data));
+					INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u64(data));
 				}
 				INTERBUF_RETURN_IF_EXCEPT(context->writer->write(i.name.data(), i.name.size()));
 
-				INTERBUF_RETURN_IF_EXCEPT(_doSerializeByFrameType(context, i.type, curPtr));
+				INTERBUF_RETURN_IF_EXCEPT(_do_serialize_by_frame_type(context, i.type, cur_ptr));
 
-				++exData.idxMember;
+				++ex_data.idx_member;
 
 				break;
 			}
 			case SerializeFrameType::ArrayMember: {
-				ArrayMemberSerializeFrameExData &exData = std::get<ArrayMemberSerializeFrameExData>(frame.exData);
+				ArrayMemberSerializeFrameExData &ex_data = std::get<ArrayMemberSerializeFrameExData>(frame.ex_data);
 
-				if (!exData.idxMember) {
-					uint64_t len = exData.length;
-					if (peff::getByteOrder())
-						len = peff::swapByteOrder(len);
-					INTERBUF_RETURN_IF_EXCEPT(context->writer->writeU64(len));
+				if (!ex_data.idx_member) {
+					uint64_t len = ex_data.length;
+					if (peff::get_byte_order())
+						len = peff::swap_byte_order(len);
+					INTERBUF_RETURN_IF_EXCEPT(context->writer->write_u64(len));
 				}
-				if (exData.idxMember >= exData.length) {
-					context->frames.popBack();
+				if (ex_data.idx_member >= ex_data.length) {
+					context->frames.pop_back();
 					break;
 				}
 
-				const char *curPtr = frame.ptr + exData.idxMember * frame.szPerElement;
+				const char *cur_ptr = frame.ptr + ex_data.idx_member * frame.sz_per_element;
 
-				INTERBUF_RETURN_IF_EXCEPT(_doSerializeByFrameType(context, frame.elementType, curPtr));
+				INTERBUF_RETURN_IF_EXCEPT(_do_serialize_by_frame_type(context, frame.element_type, cur_ptr));
 
-				++exData.idxMember;
+				++ex_data.idx_member;
 
 				break;
 			}
@@ -292,40 +292,40 @@ INTERBUF_API ExceptionPointer interbuf::_doSerialize(SerializeContext *context) 
 	return {};
 }
 
-INTERBUF_API ExceptionPointer interbuf::serializeStruct(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<StructLayoutObject> rootLayout) {
+INTERBUF_API ExceptionPointer interbuf::serialize_struct(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<StructLayoutObject> root_layout) {
 	SerializeContext context(allocator, writer);
 
-	SerializeFrame newFrame;
+	SerializeFrame new_frame;
 
-	newFrame.frameType = SerializeFrameType::StructMember;
-	newFrame.exData = StructMemberSerializeFrameExData(rootLayout);
-	newFrame.ptr = (const char *)ptr;
+	new_frame.frame_type = SerializeFrameType::StructMember;
+	new_frame.ex_data = StructMemberSerializeFrameExData(root_layout);
+	new_frame.ptr = (const char *)ptr;
 
-	if (!context.frames.pushBack(std::move(newFrame)))
+	if (!context.frames.push_back(std::move(new_frame)))
 		return OutOfMemoryError::alloc();
 
-	return _doSerialize(&context);
+	return _do_serialize(&context);
 }
 
-INTERBUF_API ExceptionPointer interbuf::serializeClass(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<ClassLayoutObject> rootLayout) {
+INTERBUF_API ExceptionPointer interbuf::serialize_class(peff::Alloc *allocator, const void *ptr, Writer *writer, ObjectPtr<ClassLayoutObject> root_layout) {
 	SerializeContext context(allocator, writer);
 
-	if (rootLayout->getFields().size() >= SIZE_MAX)
+	if (root_layout->get_fields().size() >= SIZE_MAX)
 		std::terminate();
 
-	INTERBUF_RETURN_IF_EXCEPT(context.writer->writeU64(
-		peff::getByteOrder()
-			? peff::swapByteOrder((uint64_t)rootLayout->getFields().size())
-			: (uint64_t)rootLayout->getFields().size()));
+	INTERBUF_RETURN_IF_EXCEPT(context.writer->write_u64(
+		peff::get_byte_order()
+			? peff::swap_byte_order((uint64_t)root_layout->get_fields().size())
+			: (uint64_t)root_layout->get_fields().size()));
 
-	SerializeFrame newFrame;
+	SerializeFrame new_frame;
 
-	newFrame.frameType = SerializeFrameType::ClassMember;
-	newFrame.exData = ClassMemberSerializeFrameExData(rootLayout);
-	newFrame.ptr = (const char *)ptr;
+	new_frame.frame_type = SerializeFrameType::ClassMember;
+	new_frame.ex_data = ClassMemberSerializeFrameExData(root_layout);
+	new_frame.ptr = (const char *)ptr;
 
-	if (!context.frames.pushBack(std::move(newFrame)))
+	if (!context.frames.push_back(std::move(new_frame)))
 		return OutOfMemoryError::alloc();
 
-	return _doSerialize(&context);
+	return _do_serialize(&context);
 }

@@ -19,62 +19,62 @@ public:
 
 	virtual interbuf::ExceptionPointer write(const char *src, size_t size) override {
 		if (!(fwrite(src, size, 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeI8(int8_t data) override {
+	virtual interbuf::ExceptionPointer write_i8(int8_t data) override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeI16(int16_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_i16(int16_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeI32(int32_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_i32(int32_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeI64(int64_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_i64(int64_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeU8(uint8_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_u8(uint8_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeU16(uint16_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_u16(uint16_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeU32(uint32_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_u32(uint32_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeU64(uint64_t data) noexcept override {
+	virtual interbuf::ExceptionPointer write_u64(uint64_t data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeF32(float data) noexcept override {
+	virtual interbuf::ExceptionPointer write_f32(float data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeF64(double data) noexcept override {
+	virtual interbuf::ExceptionPointer write_f64(double data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer writeBool(bool data) noexcept override {
+	virtual interbuf::ExceptionPointer write_bool(bool data) noexcept override {
 		if (!(fwrite(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
 };
@@ -94,62 +94,62 @@ public:
 
 	virtual interbuf::ExceptionPointer read(char *buffer, size_t size) noexcept override {
 		if (!(fread(buffer, size, 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readI8(int8_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_i8(int8_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readI16(int16_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_i16(int16_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readI32(int32_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_i32(int32_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readI64(int64_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_i64(int64_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readU8(uint8_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_u8(uint8_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readU16(uint16_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_u16(uint16_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readU32(uint32_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_u32(uint32_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readU64(uint64_t &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_u64(uint64_t &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readF32(float &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_f32(float &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readF64(double &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_f64(double &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
-	virtual interbuf::ExceptionPointer readBool(bool &data) noexcept override {
+	virtual interbuf::ExceptionPointer read_bool(bool &data) noexcept override {
 		if (!(fread(&data, sizeof(data), 1, _fp)))
-			return interbuf::withOOMErrorIfAllocFailed(interbuf::IOError::alloc(allocator.get()));
+			return interbuf::with_oom_error_if_alloc_failed(interbuf::IOError::alloc(allocator.get()));
 		return {};
 	}
 };
@@ -176,11 +176,11 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	interbuf::Document document(peff::getDefaultAlloc());
+	interbuf::Document document(peff::default_allocator());
 	{
-		interbuf::ObjectPtr<interbuf::StructLayoutObject> structLayout;
+		interbuf::ObjectPtr<interbuf::StructLayoutObject> struct_layout;
 
-		if (!(structLayout = interbuf::makeObject<interbuf::StructLayoutObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()))) {
+		if (!(struct_layout = interbuf::make_object<interbuf::StructLayoutObject>(peff::default_allocator(), &document, peff::default_allocator()))) {
 			std::terminate();
 		}
 
@@ -188,7 +188,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::I8 }, interbuf_offsetof(Test, i8) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -196,7 +196,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::I16 }, interbuf_offsetof(Test, i16) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -204,7 +204,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::I32 }, interbuf_offsetof(Test, i32) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -212,7 +212,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::I64 }, interbuf_offsetof(Test, i64) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -220,7 +220,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::U8 }, interbuf_offsetof(Test, u8) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -228,7 +228,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::U16 }, interbuf_offsetof(Test, u16) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -236,7 +236,7 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::U32 }, interbuf_offsetof(Test, u32) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -244,41 +244,41 @@ int main() {
 		{
 			field = { interbuf::DataType{ interbuf::DataTypeKind::U64 }, interbuf_offsetof(Test, u64) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
 
 		{
-			interbuf::ObjectPtr<interbuf::ArrayDataTypeDefObject> arrayDataType;
+			interbuf::ObjectPtr<interbuf::ArrayDataTypeDefObject> array_data_type;
 
-			if (!(arrayDataType = interbuf::makeObject<interbuf::ArrayDataTypeDefObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()))) {
+			if (!(array_data_type = interbuf::make_object<interbuf::ArrayDataTypeDefObject>(peff::default_allocator(), &document, peff::default_allocator()))) {
 				std::terminate();
 			}
 
-			arrayDataType->elementType = interbuf::DataType{ interbuf::DataTypeKind::U8 };
+			array_data_type->element_type = interbuf::DataType{ interbuf::DataTypeKind::U8 };
 
-			arrayDataType->serializer = [](const void *ptr,
-											const char *&ptrOut,
-											size_t &szElementOut,
-											size_t &lengthOut) {
-				ptrOut = (const char *)ptr;
-				szElementOut = sizeof(uint8_t);
-				lengthOut = std::size(std::declval<Test>().s);
+			array_data_type->serializer = [](const void *ptr,
+											const char *&ptr_out,
+											size_t &sz_element_out,
+											size_t &length_out) {
+				ptr_out = (const char *)ptr;
+				sz_element_out = sizeof(uint8_t);
+				length_out = std::size(std::declval<Test>().s);
 			};
 
-			arrayDataType->deserializer = [](size_t nElements,
+			array_data_type->deserializer = [](size_t n_elements,
 											  void *ptr,
-											  char *&ptrOut,
-											  size_t &szElementOut) -> interbuf::ExceptionPointer {
-				szElementOut = sizeof(uint8_t);
-				ptrOut = (char *)ptr;
+											  char *&ptr_out,
+											  size_t &sz_element_out) -> interbuf::ExceptionPointer {
+				sz_element_out = sizeof(uint8_t);
+				ptr_out = (char *)ptr;
 				return {};
 			};
 
-			field = { interbuf::DataType{ interbuf::DataTypeKind::Array, arrayDataType.castTo<interbuf::Object>() }, interbuf_offsetof(Test, s) };
+			field = { interbuf::DataType{ interbuf::DataTypeKind::Array, array_data_type.cast_to<interbuf::Object>() }, interbuf_offsetof(Test, s) };
 
-			if (!structLayout->addField(std::move(field))) {
+			if (!struct_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -303,9 +303,9 @@ int main() {
 		memset(test.s, 0xa1, sizeof(test.s));
 
 		{
-			MyWriter writer(peff::getDefaultAlloc(), fp);
+			MyWriter writer(peff::default_allocator(), fp);
 
-			interbuf::serializeStruct(peff::getDefaultAlloc(), &test, &writer, structLayout);
+			interbuf::serialize_struct(peff::default_allocator(), &test, &writer, struct_layout);
 		}
 
 		FILE *fp2;
@@ -317,10 +317,11 @@ int main() {
 
 		Test test2;
 
+		peff::HashSet<peff::String> string_pool(peff::default_allocator());
 		{
-			MyReader reader(peff::getDefaultAlloc(), fp2);
+			MyReader reader(peff::default_allocator(), fp2);
 
-			interbuf::deserializeStruct(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, structLayout);
+			interbuf::deserialize_struct(string_pool, peff::default_allocator(), &test2, sizeof(test2), &reader, struct_layout);
 		}
 
 		assert(test2.i8 == -12);
@@ -337,9 +338,9 @@ int main() {
 	}
 
 	{
-		interbuf::ObjectPtr<interbuf::ClassLayoutObject> classLayout;
+		interbuf::ObjectPtr<interbuf::ClassLayoutObject> class_layout;
 
-		if (!(classLayout = interbuf::makeObject<interbuf::ClassLayoutObject>(peff::getDefaultAlloc(), &document, peff::getDefaultAlloc()))) {
+		if (!(class_layout = interbuf::make_object<interbuf::ClassLayoutObject>(peff::default_allocator(), &document, peff::default_allocator()))) {
 			std::terminate();
 		}
 
@@ -347,14 +348,14 @@ int main() {
 		{
 			field = { "u32", interbuf::DataType{ interbuf::DataTypeKind::U32 }, interbuf_offsetof(ClassTest, u32) };
 
-			if (!classLayout->addField(std::move(field))) {
+			if (!class_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
 		{
 			field = { "f32", interbuf::DataType{ interbuf::DataTypeKind::F32 }, interbuf_offsetof(ClassTest, f32) };
 
-			if (!classLayout->addField(std::move(field))) {
+			if (!class_layout->add_field(std::move(field))) {
 				std::terminate();
 			}
 		}
@@ -372,9 +373,9 @@ int main() {
 		test.f32 = 0.34f;
 
 		{
-			MyWriter writer(peff::getDefaultAlloc(), fp);
+			MyWriter writer(peff::default_allocator(), fp);
 
-			interbuf::serializeClass(peff::getDefaultAlloc(), &test, &writer, classLayout);
+			interbuf::serialize_class(peff::default_allocator(), &test, &writer, class_layout);
 		}
 
 		FILE *fp2;
@@ -387,9 +388,9 @@ int main() {
 		ClassTest test2;
 
 		{
-			MyReader reader(peff::getDefaultAlloc(), fp2);
+			MyReader reader(peff::default_allocator(), fp2);
 
-			interbuf::deserializeClass(peff::getDefaultAlloc(), &test2, sizeof(test2), &reader, classLayout);
+			interbuf::deserialize_class(peff::default_allocator(), &test2, sizeof(test2), &reader, class_layout);
 		}
 
 		assert(test2.u32 == 0x12);

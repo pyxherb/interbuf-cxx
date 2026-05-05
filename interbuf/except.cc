@@ -2,7 +2,7 @@
 
 using namespace interbuf;
 
-static OutOfMemoryError _g_outOfMemoryError;
+static OutOfMemoryError _g_out_of_memory_error;
 
 INTERBUF_API OutOfMemoryError::OutOfMemoryError() : Exception(ExceptionKind::OutOfMemory) {}
 INTERBUF_API OutOfMemoryError::~OutOfMemoryError() {}
@@ -11,7 +11,7 @@ INTERBUF_API void OutOfMemoryError::dealloc() {
 }
 
 INTERBUF_API OutOfMemoryError *OutOfMemoryError::alloc() {
-	return &_g_outOfMemoryError;
+	return &_g_out_of_memory_error;
 }
 
 INTERBUF_API IOError::IOError(peff::Alloc *allocator)
@@ -19,7 +19,7 @@ INTERBUF_API IOError::IOError(peff::Alloc *allocator)
 INTERBUF_API IOError::~IOError() {}
 
 INTERBUF_API void IOError::dealloc() {
-	peff::destroyAndRelease<IOError>(allocator.get(), this, sizeof(std::max_align_t));
+	peff::destroy_and_release<IOError>(allocator.get(), this, sizeof(std::max_align_t));
 }
 
 INTERBUF_API IOError *IOError::alloc(peff::Alloc *allocator) noexcept {
@@ -28,7 +28,7 @@ INTERBUF_API IOError *IOError::alloc(peff::Alloc *allocator) noexcept {
 	if (!buf)
 		return nullptr;
 
-	peff::constructAt<IOError>((IOError *)buf, allocator);
+	peff::construct_at<IOError>((IOError *)buf, allocator);
 
 	return (IOError *)buf;
 }
@@ -38,7 +38,7 @@ INTERBUF_API FieldNameLengthError::FieldNameLengthError(peff::Alloc *allocator)
 INTERBUF_API FieldNameLengthError::~FieldNameLengthError() {}
 
 INTERBUF_API void FieldNameLengthError::dealloc() {
-	peff::destroyAndRelease<FieldNameLengthError>(allocator.get(), this, sizeof(std::max_align_t));
+	peff::destroy_and_release<FieldNameLengthError>(allocator.get(), this, sizeof(std::max_align_t));
 }
 
 INTERBUF_API FieldNameLengthError *FieldNameLengthError::alloc(peff::Alloc *allocator) noexcept {
@@ -47,7 +47,7 @@ INTERBUF_API FieldNameLengthError *FieldNameLengthError::alloc(peff::Alloc *allo
 	if (!buf)
 		return nullptr;
 
-	peff::constructAt<FieldNameLengthError>((FieldNameLengthError *)buf, allocator);
+	peff::construct_at<FieldNameLengthError>((FieldNameLengthError *)buf, allocator);
 
 	return (FieldNameLengthError *)buf;
 }
@@ -57,7 +57,7 @@ INTERBUF_API IllegalObjectLayoutError::IllegalObjectLayoutError(peff::Alloc *all
 INTERBUF_API IllegalObjectLayoutError::~IllegalObjectLayoutError() {}
 
 INTERBUF_API void IllegalObjectLayoutError::dealloc() {
-	peff::destroyAndRelease<IllegalObjectLayoutError>(allocator.get(), this, sizeof(std::max_align_t));
+	peff::destroy_and_release<IllegalObjectLayoutError>(allocator.get(), this, sizeof(std::max_align_t));
 }
 
 INTERBUF_API IllegalObjectLayoutError *IllegalObjectLayoutError::alloc(peff::Alloc *allocator) noexcept {
@@ -66,7 +66,7 @@ INTERBUF_API IllegalObjectLayoutError *IllegalObjectLayoutError::alloc(peff::All
 	if (!buf)
 		return nullptr;
 
-	peff::constructAt<IllegalObjectLayoutError>((IllegalObjectLayoutError *)buf, allocator);
+	peff::construct_at<IllegalObjectLayoutError>((IllegalObjectLayoutError *)buf, allocator);
 
 	return (IllegalObjectLayoutError *)buf;
 }

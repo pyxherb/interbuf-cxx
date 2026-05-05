@@ -24,24 +24,24 @@ namespace interbuf {
 	class ClassBase {
 	};
 
-	typedef void (*ObjectDestructor)(Object *astNode);
+	typedef void (*ObjectDestructor)(Object *ast_node);
 
 	template <typename T>
 	using ObjectPtr = peff::SharedPtr<T>;
 
-	INTERBUF_API void addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
+	INTERBUF_API void add_object_to_destructible_list(Object *ast_node, ObjectDestructor destructor);
 
 	class Object {
 	private:
 		Document *_document;
-		Object *_nextDestructible;
+		Object *_next_destructible;
 		ObjectDestructor _destructor;
 
 		friend class Document;
-		friend INTERBUF_API void interbuf::addObjectToDestructibleList(Object *astNode, ObjectDestructor destructor);
+		friend INTERBUF_API void interbuf::add_object_to_destructible_list(Object *ast_node, ObjectDestructor destructor);
 
 	public:
-		peff::RcObjectPtr<peff::Alloc> selfAllocator;
+		peff::RcObjectPtr<peff::Alloc> self_allocator;
 
 		INTERBUF_API Object(Document *document, peff::Alloc *allocator, ObjectType type);
 		INTERBUF_API virtual ~Object();
@@ -52,7 +52,7 @@ namespace interbuf {
 		ObjectType _type;
 
 	public:
-		INTERBUF_FORCEINLINE ObjectType getObjectType() const {
+		INTERBUF_FORCEINLINE ObjectType get_object_type() const {
 			return _type;
 		}
 	};
@@ -62,27 +62,27 @@ namespace interbuf {
 		INTERBUF_FORCEINLINE ObjectControlBlock(peff::Alloc *allocator, T *ptr) noexcept : peff::SharedPtr<T>::DefaultSharedPtrControlBlock(allocator, ptr) {}
 		inline virtual ~ObjectControlBlock() {}
 
-		inline virtual void onStrongRefZero() noexcept override {
-			addObjectToDestructibleList(this->ptr, [](Object *object) {
-				peff::destroyAndRelease<T>(object->selfAllocator.get(), static_cast<T *>(object), alignof(T));
+		inline virtual void on_strong_ref_zero() noexcept override {
+			add_object_to_destructible_list(this->ptr, [](Object *object) {
+				peff::destroy_and_release<T>(object->self_allocator.get(), static_cast<T *>(object), alignof(T));
 			});
 		}
 
-		inline virtual void onRefZero() noexcept override {
-			peff::destroyAndRelease<ObjectControlBlock<T>>(this->allocator.get(), this, alignof(ObjectControlBlock<T>));
+		inline virtual void on_ref_zero() noexcept override {
+			peff::destroy_and_release<ObjectControlBlock<T>>(this->allocator.get(), this, alignof(ObjectControlBlock<T>));
 		}
 	};
 
 	template <typename T, typename... Args>
-	INTERBUF_FORCEINLINE ObjectPtr<T> makeObject(peff::Alloc *allocator, Args &&...args) {
-		return peff::makeSharedWithControlBlock<T, ObjectControlBlock<T>>(allocator, std::forward<Args>(args)...);
+	INTERBUF_FORCEINLINE ObjectPtr<T> make_object(peff::Alloc *allocator, Args &&...args) {
+		return peff::make_shared_with_control_block<T, ObjectControlBlock<T>>(allocator, std::forward<Args>(args)...);
 	}
 
 	class StructLayoutObject;
 
 	struct DataType {
 		DataTypeKind kind;
-		ObjectPtr<Object> typeDefObject;
+		ObjectPtr<Object> type_def_object;
 	};
 
 	struct StructField {
@@ -124,10 +124,10 @@ namespace interbuf {
 
 		INTERBUF_API virtual void dealloc() noexcept override;
 
-		[[nodiscard]] INTERBUF_API bool addField(StructField &&field);
-		[[nodiscard]] INTERBUF_API bool insertField(size_t index, StructField &&field);
+		[[nodiscard]] INTERBUF_API bool add_field(StructField &&field);
+		[[nodiscard]] INTERBUF_API bool insert_field(size_t index, StructField &&field);
 
-		INTERBUF_FORCEINLINE const decltype(_fields) &getFields() const {
+		INTERBUF_FORCEINLINE const decltype(_fields) &get_fields() const {
 			return _fields;
 		}
 	};
@@ -139,7 +139,7 @@ namespace interbuf {
 
 		INTERBUF_FORCEINLINE ClassField() : name(), type({}), offset(0) {}
 		INTERBUF_FORCEINLINE ClassField(ClassField &&rhs) : name(std::move(rhs.name)), type(std::move(rhs.type)), offset(std::move(rhs.offset)) {}
-		INTERBUF_FORCEINLINE ClassField(const std::string_view &name, DataType type, size_t offset) : name(std::move(name)), type(type), offset(offset) {}
+		INTERBUF_FORCEINLINE ClassField(const std::string_view &name, DataType type, size_t offset) : name(name), type(type), offset(offset) {}
 		~ClassField() = default;
 
 		INTERBUF_FORCEINLINE ClassField &operator=(ClassField &&rhs) noexcept {
@@ -154,8 +154,8 @@ namespace interbuf {
 	class ClassLayoutObject final : public Object {
 	private:
 		peff::DynArray<ClassField> _fields;
-		peff::HashMap<std::string_view, size_t> _fieldNameIndices;
-		bool _isFieldNameIndicesValid = true;
+		peff::HashMap<std::string_view, size_t> _field_name_indices;
+		bool _is_field_name_indices_valid = true;
 
 	public:
 		BlankClassConstructor constructor = nullptr;
@@ -165,50 +165,50 @@ namespace interbuf {
 
 		INTERBUF_API virtual void dealloc() noexcept override;
 
-		INTERBUF_FORCEINLINE bool isFieldNameIndicesBuilt() const noexcept {
-			return _isFieldNameIndicesValid;
+		INTERBUF_FORCEINLINE bool is_field_name_indices_built() const noexcept {
+			return _is_field_name_indices_valid;
 		}
 
-		INTERBUF_FORCEINLINE void invalidateFieldNameIndices() noexcept {
-			_fieldNameIndices.clear();
-			_isFieldNameIndicesValid = false;
+		INTERBUF_FORCEINLINE void invalidate_field_name_indices() noexcept {
+			_field_name_indices.clear();
+			_is_field_name_indices_valid = false;
 		}
-		[[nodiscard]] INTERBUF_API bool updateFieldNameIndices() noexcept;
+		[[nodiscard]] INTERBUF_API bool update_field_name_indices() noexcept;
 
-		[[nodiscard]] INTERBUF_API bool addField(ClassField &&field);
-		[[nodiscard]] INTERBUF_API bool insertField(size_t index, ClassField &&field);
+		[[nodiscard]] INTERBUF_API bool add_field(ClassField &&field);
+		[[nodiscard]] INTERBUF_API bool insert_field(size_t index, ClassField &&field);
 
-		INTERBUF_FORCEINLINE const decltype(_fields) &getFields() const {
+		INTERBUF_FORCEINLINE const decltype(_fields) &get_fields() const {
 			return _fields;
 		}
 
-		INTERBUF_FORCEINLINE ClassField &getNamedField(const std::string_view &name) {
-			assert(_isFieldNameIndicesValid);
-			return _fields.at(_fieldNameIndices.at(name));
+		INTERBUF_FORCEINLINE ClassField &get_named_field(const std::string_view &name) {
+			assert(_is_field_name_indices_valid);
+			return _fields.at(_field_name_indices.at(name));
 		}
 
-		INTERBUF_FORCEINLINE const ClassField &getNamedField(const std::string_view &name) const {
-			assert(_isFieldNameIndicesValid);
-			return _fields.at(_fieldNameIndices.at(name));
+		INTERBUF_FORCEINLINE const ClassField &get_named_field(const std::string_view &name) const {
+			assert(_is_field_name_indices_valid);
+			return _fields.at(_field_name_indices.at(name));
 		}
 	};
 
 	typedef void (*ArraySerializer)(
 		const void *ptr,	   // Pointer to the array structure
-		const char *&ptrOut,   // Pointer out to the array data
-		size_t &szElementOut,  // Element size out
-		size_t &lengthOut	   // Length out
+		const char *&ptr_out,   // Pointer out to the array data
+		size_t &sz_element_out,  // Element size out
+		size_t &length_out	   // Length out
 	);
 	typedef ExceptionPointer (*ArrayDeserializer)(
-		size_t nElements,	  // Element number
+		size_t n_elements,	  // Element number
 		void *ptr,			  // Pointer to the array structure
-		char *&ptrOut,		  // Pointer out to the array data
-		size_t &szElementOut  // Element size out
+		char *&ptr_out,		  // Pointer out to the array data
+		size_t &sz_element_out  // Element size out
 	);
 
 	class ArrayDataTypeDefObject final : public Object {
 	public:
-		DataType elementType;
+		DataType element_type;
 		ArraySerializer serializer = nullptr;
 		ArrayDeserializer deserializer = nullptr;
 
@@ -220,18 +220,18 @@ namespace interbuf {
 
 	class Document {
 	private:
-		INTERBUF_API void _doClearDeferredDestructibleObjects();
+		INTERBUF_API void _do_clear_deferred_destructible_objects();
 
 	public:
 		peff::RcObjectPtr<peff::Alloc> allocator;
-		Object *destructibleObjectList = nullptr;
+		Object *destructible_object_list = nullptr;
 
 		INTERBUF_API Document(peff::Alloc *allocator);
 		INTERBUF_API virtual ~Document();
 
-		INTERBUF_FORCEINLINE void clearDeferredDestructibleObjects() {
-			if (destructibleObjectList) {
-				_doClearDeferredDestructibleObjects();
+		INTERBUF_FORCEINLINE void clear_deferred_destructible_objects() {
+			if (destructible_object_list) {
+				_do_clear_deferred_destructible_objects();
 			}
 		}
 	};
